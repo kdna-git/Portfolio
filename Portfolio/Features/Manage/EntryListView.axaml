@@ -1,0 +1,473 @@
+<UserControl
+    x:Class="Portfolio.Features.Manage.EntryListView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:conv="using:Portfolio.Charts.Converters"
+    xmlns:manage="using:Portfolio.Features.Manage"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:Name="Root"
+    x:DataType="manage:EntryListViewModel">
+
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{DynamicResource AppPagePadding}" Spacing="12">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                        <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Classes="primary"
+                        Command="{Binding AddEntryCommand}"
+                        Content="New entry" />
+                </Grid>
+
+                <shared:ErrorBanner DataContext="{Binding}" />
+
+                <!--  Filters. One row on a desktop, wrapped on a phone, same controls either way.  -->
+                <Border Classes="card" Padding="12">
+                    <StackPanel Spacing="10">
+                        <TextBox
+                            Text="{Binding SearchText}"
+                            PlaceholderText="Search notes, holdings and platforms" />
+
+                        <WrapPanel ItemSpacing="10" LineSpacing="10">
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Period" />
+                                <ComboBox
+                                    ItemsSource="{Binding PeriodOptions}"
+                                    SelectedItem="{Binding SelectedPeriod}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="160" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Platform" />
+                                <ComboBox
+                                    ItemsSource="{Binding PlatformFilters}"
+                                    SelectedItem="{Binding SelectedPlatformFilter}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="160" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Holding" />
+                                <ComboBox
+                                    ItemsSource="{Binding HoldingFilters}"
+                                    SelectedItem="{Binding SelectedHoldingFilter}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="160" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Movement" />
+                                <ComboBox
+                                    ItemsSource="{Binding MovementFilters}"
+                                    SelectedItem="{Binding SelectedMovement}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="130" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Sort by" />
+                                <ComboBox
+                                    ItemsSource="{Binding SortOptions}"
+                                    SelectedItem="{Binding SelectedSort}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Group" />
+                                <ComboBox
+                                    ItemsSource="{Binding GroupingOptions}"
+                                    SelectedItem="{Binding SelectedGrouping}" />
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <WrapPanel ItemSpacing="8" LineSpacing="8">
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding ToggleSortDirectionCommand}"
+                                Content="Reverse order" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowCardsCommand}"
+                                Content="Cards"
+                                GroupName="EntryViewMode"
+                                IsChecked="{Binding IsCardView, Mode=OneWay}" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowTableCommand}"
+                                Content="Table"
+                                GroupName="EntryViewMode"
+                                IsChecked="{Binding IsTableView, Mode=OneWay}" />
+                            <Button
+                                Classes="ghost"
+                                Command="{Binding ClearFiltersCommand}"
+                                Content="Clear filters" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--  Totals for the filtered set, not the whole portfolio.  -->
+                <Border Classes="card" Padding="12,10">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource AppInkSecondaryBrush}"
+                            Text="{Binding TotalsSummary}"
+                            TextWrapping="Wrap" />
+                        <StackPanel Grid.Column="1" Margin="12,0,0,0">
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                FontSize="10"
+                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                Text="Net effect" />
+                            <TextBlock
+                                HorizontalAlignment="Right"
+                                Classes="metricValue"
+                                Classes.negative="{Binding !NetTotalIsPositive}"
+                                Classes.positive="{Binding NetTotalIsPositive}"
+                                FontSize="16"
+                                FontWeight="Bold"
+                                Text="{Binding NetTotalText}" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Classes="card" Padding="20" IsVisible="{Binding IsEmptyResult}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            Text="Nothing matches these filters."
+                            IsVisible="{Binding HasAnyEntries}" />
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            Text="No movements recorded yet. Every figure in the app comes from these, so this is the place to start."
+                            IsVisible="{Binding !HasAnyEntries}"
+                            TextAlignment="Center" />
+                        <Button
+                            HorizontalAlignment="Center"
+                            Classes="primary"
+                            Command="{Binding AddEntryCommand}"
+                            Content="Record the first entry"
+                            IsVisible="{Binding !HasAnyEntries}" />
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl IsVisible="{Binding IsCardView}" ItemsSource="{Binding Groups}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="manage:EntryGroupViewModel">
+                            <StackPanel Margin="0,0,0,6">
+                                <Grid
+                                    Margin="4,8,4,4"
+                                    ColumnDefinitions="*,Auto"
+                                    IsVisible="{Binding HasHeader}">
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Classes="sectionTitle"
+                                        Text="{Binding Header}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        FontSize="11"
+                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                        Text="{Binding Summary}" />
+                                </Grid>
+
+                                <ItemsControl ItemsSource="{Binding Rows}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="manage:EntryRowViewModel">
+                                            <Border Margin="0,0,0,6" Classes="card" Padding="12">
+                                                <Grid RowDefinitions="Auto,Auto,Auto">
+
+                                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                                        <StackPanel Grid.Column="0">
+                                                            <TextBlock
+                                                                FontSize="13"
+                                                                FontWeight="SemiBold"
+                                                                Foreground="{DynamicResource AppInkBrush}"
+                                                                Text="{Binding HoldingName}"
+                                                                TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock
+                                                                FontSize="11"
+                                                                Foreground="{DynamicResource AppInkMutedBrush}">
+                                                                <Run Text="{Binding PlatformName}" />
+                                                                <Run Text="·" />
+                                                                <Run Text="{Binding DateText}" />
+                                                            </TextBlock>
+                                                        </StackPanel>
+                                                        <TextBlock
+                                                            Grid.Column="1"
+                                                            VerticalAlignment="Center"
+                                                            Classes="metricValue"
+                                                            Classes.negative="{Binding AmountIsNegative}"
+                                                            Classes.positive="{Binding AmountIsPositive}"
+                                                            FontSize="16"
+                                                            FontWeight="Bold"
+                                                            Text="{Binding AmountText}" />
+                                                    </Grid>
+
+                                                    <!--
+                                                        One entry can hold several movements at once, so
+                                                        each gets its own labelled chip instead of the row
+                                                        pretending to have a single type.
+                                                    -->
+                                                    <ItemsControl
+                                                        Grid.Row="1"
+                                                        Margin="0,8,0,0"
+                                                        ItemsSource="{Binding Chips}">
+                                                        <ItemsControl.ItemsPanel>
+                                                            <ItemsPanelTemplate>
+                                                                <WrapPanel ItemSpacing="6" LineSpacing="6" />
+                                                            </ItemsPanelTemplate>
+                                                        </ItemsControl.ItemsPanel>
+                                                        <ItemsControl.ItemTemplate>
+                                                            <DataTemplate x:DataType="manage:EntryChip">
+                                                                <Border
+                                                                    Padding="7,3"
+                                                                    Background="{DynamicResource AppSurfaceAltBrush}"
+                                                                    CornerRadius="6">
+                                                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                                                        <Border
+                                                                            Width="7"
+                                                                            Height="7"
+                                                                            VerticalAlignment="Center"
+                                                                            Background="{Binding Color, Converter={x:Static conv:ChartConverters.HexToBrush}}"
+                                                                            CornerRadius="2" />
+                                                                        <TextBlock
+                                                                            FontSize="11"
+                                                                            Foreground="{DynamicResource AppInkSecondaryBrush}"
+                                                                            Text="{Binding Label}" />
+                                                                        <TextBlock
+                                                                            FontSize="11"
+                                                                            FontWeight="Medium"
+                                                                            Foreground="{DynamicResource AppInkBrush}"
+                                                                            Text="{Binding Amount}" />
+                                                                    </StackPanel>
+                                                                </Border>
+                                                            </DataTemplate>
+                                                        </ItemsControl.ItemTemplate>
+                                                    </ItemsControl>
+
+                                                    <Grid Grid.Row="2" Margin="0,8,0,0" ColumnDefinitions="*,Auto">
+                                                        <TextBlock
+                                                            Grid.Column="0"
+                                                            VerticalAlignment="Center"
+                                                            FontSize="11"
+                                                            FontStyle="Italic"
+                                                            Foreground="{DynamicResource AppInkMutedBrush}"
+                                                            IsVisible="{Binding HasNote}"
+                                                            Text="{Binding Note}"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                        <StackPanel
+                                                            Grid.Column="1"
+                                                            Orientation="Horizontal"
+                                                            Spacing="6">
+                                                            <Button
+                                                                Classes="secondary"
+                                                                Command="{Binding #Root.((manage:EntryListViewModel)DataContext).EditCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Edit" />
+                                                            <Button
+                                                                Classes="danger"
+                                                                Command="{Binding #Root.((manage:EntryListViewModel)DataContext).DeleteCommand}"
+                                                                CommandParameter="{Binding}"
+                                                                Content="Delete" />
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!--
+                    The dense alternative: one line per entry with the components in columns, which is
+                    what you want when scanning a month of rows rather than reading a single one. It
+                    scrolls sideways below its natural width instead of squeezing the numbers.
+                -->
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    IsVisible="{Binding IsTableView}"
+                    VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl MinWidth="880" ItemsSource="{Binding Groups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="manage:EntryGroupViewModel">
+                                <StackPanel Margin="0,0,0,10">
+                                    <Grid
+                                        Margin="6,8,6,4"
+                                        ColumnDefinitions="*,Auto"
+                                        IsVisible="{Binding HasHeader}">
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Classes="sectionTitle"
+                                            Text="{Binding Header}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            FontSize="11"
+                                            Foreground="{DynamicResource AppInkMutedBrush}"
+                                            Text="{Binding Summary}" />
+                                    </Grid>
+
+                                    <Border Classes="card" Padding="6">
+                                        <StackPanel>
+                                            <Grid Margin="6,2,6,6" ColumnDefinitions="80,120,*,90,90,90,90,100,140">
+                                                <TextBlock
+                                                    Grid.Column="0"
+                                                    Classes="fieldLabel"
+                                                    Text="Date" />
+                                                <TextBlock
+                                                    Grid.Column="1"
+                                                    Classes="fieldLabel"
+                                                    Text="Platform" />
+                                                <TextBlock
+                                                    Grid.Column="2"
+                                                    Classes="fieldLabel"
+                                                    Text="Holding" />
+                                                <TextBlock
+                                                    Grid.Column="3"
+                                                    HorizontalAlignment="Right"
+                                                    Classes="fieldLabel"
+                                                    Text="In" />
+                                                <TextBlock
+                                                    Grid.Column="4"
+                                                    HorizontalAlignment="Right"
+                                                    Classes="fieldLabel"
+                                                    Text="Out" />
+                                                <TextBlock
+                                                    Grid.Column="5"
+                                                    HorizontalAlignment="Right"
+                                                    Classes="fieldLabel"
+                                                    Text="Income" />
+                                                <TextBlock
+                                                    Grid.Column="6"
+                                                    HorizontalAlignment="Right"
+                                                    Classes="fieldLabel"
+                                                    Text="Costs" />
+                                                <TextBlock
+                                                    Grid.Column="7"
+                                                    HorizontalAlignment="Right"
+                                                    Classes="fieldLabel"
+                                                    Text="Net" />
+                                            </Grid>
+
+                                            <ItemsControl ItemsSource="{Binding Rows}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate x:DataType="manage:EntryRowViewModel">
+                                                        <Border
+                                                            Padding="6,7"
+                                                            BorderBrush="{DynamicResource AppBorderBrush}"
+                                                            BorderThickness="0,0,0,1">
+                                                            <Grid ColumnDefinitions="80,120,*,90,90,90,90,100,140">
+                                                                <TextBlock
+                                                                    Grid.Column="0"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkSecondaryBrush}"
+                                                                    Text="{Binding ShortDateText}" />
+                                                                <TextBlock
+                                                                    Grid.Column="1"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkSecondaryBrush}"
+                                                                    Text="{Binding PlatformName}"
+                                                                    TextTrimming="CharacterEllipsis" />
+                                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                                    <TextBlock
+                                                                        FontSize="12"
+                                                                        Foreground="{DynamicResource AppInkBrush}"
+                                                                        Text="{Binding HoldingName}"
+                                                                        TextTrimming="CharacterEllipsis" />
+                                                                    <TextBlock
+                                                                        FontSize="10"
+                                                                        FontStyle="Italic"
+                                                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                                                        IsVisible="{Binding HasNote}"
+                                                                        Text="{Binding Note}"
+                                                                        TextTrimming="CharacterEllipsis" />
+                                                                </StackPanel>
+                                                                <TextBlock
+                                                                    Grid.Column="3"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkBrush}"
+                                                                    Text="{Binding DepositText}" />
+                                                                <TextBlock
+                                                                    Grid.Column="4"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkBrush}"
+                                                                    Text="{Binding WithdrawalText}" />
+                                                                <TextBlock
+                                                                    Grid.Column="5"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkBrush}"
+                                                                    Text="{Binding IncomeText}" />
+                                                                <TextBlock
+                                                                    Grid.Column="6"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Center"
+                                                                    FontSize="12"
+                                                                    Foreground="{DynamicResource AppInkBrush}"
+                                                                    Text="{Binding CostText}" />
+                                                                <TextBlock
+                                                                    Grid.Column="7"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Center"
+                                                                    Classes="metricValue"
+                                                                    Classes.negative="{Binding AmountIsNegative}"
+                                                                    Classes.positive="{Binding AmountIsPositive}"
+                                                                    FontSize="12"
+                                                                    FontWeight="Medium"
+                                                                    Text="{Binding AmountText}" />
+                                                                <StackPanel
+                                                                    Grid.Column="8"
+                                                                    Margin="10,0,0,0"
+                                                                    HorizontalAlignment="Right"
+                                                                    Orientation="Horizontal"
+                                                                    Spacing="4">
+                                                                    <Button
+                                                                        Classes="ghost"
+                                                                        Command="{Binding #Root.((manage:EntryListViewModel)DataContext).EditCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Content="Edit" />
+                                                                    <Button
+                                                                        Classes="ghost"
+                                                                        Command="{Binding #Root.((manage:EntryListViewModel)DataContext).DeleteCommand}"
+                                                                        CommandParameter="{Binding}"
+                                                                        Content="Delete" />
+                                                                </StackPanel>
+                                                            </Grid>
+                                                        </Border>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!--  Long histories load in pages so the first screen paints immediately.  -->
+                <Button
+                    HorizontalAlignment="Center"
+                    Classes="secondary"
+                    Command="{Binding LoadMoreCommand}"
+                    IsVisible="{Binding CanLoadMore}">
+                    <TextBlock>
+                        <Run Text="Show more —" />
+                        <Run Text="{Binding ShownCount}" />
+                        <Run Text="of" />
+                        <Run Text="{Binding MatchCount}" />
+                        <Run Text="shown" />
+                    </TextBlock>
+                </Button>
+            </StackPanel>
+        </ScrollViewer>
+
+        <shared:ConfirmationOverlay DataContext="{Binding Confirmation}" />
+    </Grid>
+</UserControl>

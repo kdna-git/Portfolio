@@ -1,0 +1,71 @@
+<UserControl
+    x:Class="Portfolio.Features.Editors.FinancialItemEditorView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editors="using:Portfolio.Features.Editors"
+    x:DataType="editors:FinancialItemEditorViewModel">
+
+    <Border Padding="18" MinWidth="340">
+        <StackPanel Spacing="14">
+            <TextBlock Classes="pageTitle" Text="{Binding Heading}" />
+
+            <TextBlock
+                Classes="pageSubtitle"
+                IsVisible="{Binding HasEntrySummary}"
+                Text="{Binding EntrySummary}" />
+
+            <!--  Nothing can be filed anywhere until a platform exists, so say so and offer the step.  -->
+            <StackPanel IsVisible="{Binding !HasPlatforms}" Spacing="10">
+                <TextBlock
+                    Classes="pageSubtitle"
+                    Text="A holding belongs to a platform, and there are none yet." />
+                <Button
+                    Classes="primary"
+                    Command="{Binding AddPlatformCommand}"
+                    Content="Add a platform first" />
+            </StackPanel>
+
+            <StackPanel IsVisible="{Binding HasPlatforms}" Spacing="14">
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="fieldLabel" Text="Name" />
+                    <TextBox
+                        Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                        PlaceholderText="Fund, loan or savings pot" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="fieldLabel" Text="Platform" />
+                    <ComboBox
+                        ItemsSource="{Binding Platforms}"
+                        SelectedItem="{Binding SelectedPlatform}" />
+                </StackPanel>
+
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="fieldLabel" Text="Role" />
+                    <ComboBox
+                        ItemsSource="{Binding InvestmentTypes}"
+                        SelectedItem="{Binding SelectedType}" />
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="{DynamicResource AppInkMutedBrush}"
+                        Text="{Binding TypeDescription}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Classes="secondary"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel" />
+                <Button
+                    Classes="primary"
+                    Command="{Binding SaveCommand}"
+                    Content="{Binding SaveText}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

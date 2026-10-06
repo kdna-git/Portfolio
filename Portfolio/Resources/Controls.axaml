@@ -1,0 +1,353 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  Page scaffolding  -->
+
+    <Style Selector="TextBlock.pageTitle">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkBrush}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+
+    <Style Selector="TextBlock.pageSubtitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkMutedBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style Selector="TextBlock.sectionTitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkMutedBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.fieldLabel">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkSecondaryBrush}" />
+    </Style>
+
+    <Style Selector="Border.card">
+        <Setter Property="Background" Value="{DynamicResource AppSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppCardRadius}" />
+        <Setter Property="Padding" Value="14" />
+    </Style>
+
+    <!--  A card that reacts to the pointer because tapping it navigates somewhere.  -->
+    <Style Selector="Border.card.interactive">
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Transitions">
+            <Transitions>
+                <BrushTransition Property="BorderBrush" Duration="0:0:0.12" />
+            </Transitions>
+        </Setter>
+    </Style>
+
+    <Style Selector="Border.card.interactive:pointerover">
+        <Setter Property="BorderBrush" Value="{DynamicResource AppAccentBrush}" />
+    </Style>
+
+    <!--
+        Buttons.
+
+        Every class states its own hover and pressed appearance. Fluent's own
+        `Button:pointerover /template/ ContentPresenter` setters replace both the background and the
+        text colour, so a class that only styles the resting state loses its colours the moment the
+        pointer touches it — which is how the buttons ended up dark-on-dark on hover. Setting
+        `TextElement.Foreground` alongside `Background` is the part that is easy to forget: the
+        content presenter carries the text colour, not the button.
+
+        They also all centre their content and sit centred in their row, so a row mixing a 44px
+        primary button with a 36px secondary one lines up on the middle rather than the top.
+    -->
+
+    <Style Selector="Button.primary, Button.secondary, Button.danger, Button.ghost">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppControlRadius}" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+    <Style Selector="Button.primary">
+        <Setter Property="Background" Value="{DynamicResource AppAccentBrush}" />
+        <Setter Property="Foreground" Value="#ffffff" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppAccentHoverBrush}" />
+        <Setter Property="TextElement.Foreground" Value="#ffffff" />
+    </Style>
+
+    <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppAccentPressedBrush}" />
+        <Setter Property="TextElement.Foreground" Value="#ffffff" />
+    </Style>
+
+    <Style Selector="Button.primary:disabled /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppAccentBrush}" />
+        <Setter Property="TextElement.Foreground" Value="#ffffff" />
+        <Setter Property="Opacity" Value="0.45" />
+    </Style>
+
+    <Style Selector="Button.secondary">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppHoverWashBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.secondary:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppPressedWashBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.danger">
+        <Setter Property="Background" Value="{DynamicResource AppDangerWashBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource AppDangerBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppDangerWashHoverBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppDangerBrush}" />
+    </Style>
+
+    <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppDangerBrush}" />
+        <Setter Property="TextElement.Foreground" Value="#ffffff" />
+    </Style>
+
+    <Style Selector="Button.ghost">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource AppInkSecondaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="MinHeight" Value="36" />
+    </Style>
+
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppHoverWashBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.ghost:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource AppPressedWashBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.secondary:disabled /template/ ContentPresenter, Button.danger:disabled /template/ ContentPresenter, Button.ghost:disabled /template/ ContentPresenter">
+        <Setter Property="Opacity" Value="0.45" />
+    </Style>
+
+    <!--  Window caption buttons  -->
+
+    <Style Selector="Button.caption">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style Selector="Button.caption:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#22ffffff" />
+    </Style>
+
+    <Style Selector="Button.caption.close:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#c42b1c" />
+    </Style>
+
+    <!--  Navigation: the same view model renders as a side rail or a bottom bar.  -->
+
+    <Style Selector="RadioButton.rail">
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandMutedBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="RadioButton">
+                <Border
+                    x:Name="PART_Chrome"
+                    Margin="6,2"
+                    Padding="10,0"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{DynamicResource AppControlRadius}">
+                    <ContentPresenter
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="RadioButton.rail:pointerover /template/ Border#PART_Chrome">
+        <Setter Property="Background" Value="#1affffff" />
+    </Style>
+
+    <Style Selector="RadioButton.rail:checked /template/ Border#PART_Chrome">
+        <Setter Property="Background" Value="#2effffff" />
+    </Style>
+
+    <Style Selector="RadioButton.rail:checked">
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!--  A rail action that is not a destination: looks like a rail item, never shows as selected.  -->
+    <Style Selector="Button.rail">
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandMutedBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="Margin" Value="6,2" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppControlRadius}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="13" />
+    </Style>
+
+    <Style Selector="Button.rail:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="#1affffff" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppOnBrandBrush}" />
+    </Style>
+
+    <Style Selector="Button.rail:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="#2effffff" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource AppOnBrandBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.bar">
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandMutedBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="RadioButton">
+                <Border
+                    x:Name="PART_Chrome"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="0">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                        Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="RadioButton.bar:checked /template/ Border#PART_Chrome">
+        <Setter Property="Background" Value="#2effffff" />
+    </Style>
+
+    <Style Selector="RadioButton.bar:checked">
+        <Setter Property="Foreground" Value="{DynamicResource AppOnBrandBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!--  Segmented control used by the period and view-mode pickers.  -->
+
+    <Style Selector="RadioButton.segment">
+        <Setter Property="Foreground" Value="{DynamicResource AppInkSecondaryBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="RadioButton">
+                <Border
+                    x:Name="PART_Chrome"
+                    MinHeight="36"
+                    Padding="12,5"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="{DynamicResource AppControlRadius}">
+                    <ContentPresenter
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="{TemplateBinding Content}"
+                        Foreground="{TemplateBinding Foreground}" />
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </Style>
+
+    <Style Selector="RadioButton.segment:pointerover /template/ Border#PART_Chrome">
+        <Setter Property="Background" Value="{DynamicResource AppSurfaceAltBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment:checked /template/ Border#PART_Chrome">
+        <Setter Property="Background" Value="{DynamicResource AppAccentWashBrush}" />
+    </Style>
+
+    <Style Selector="RadioButton.segment:checked">
+        <Setter Property="Foreground" Value="{DynamicResource AppAccentBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!--  Inputs: tall enough to hit on a phone, consistent corners everywhere.  -->
+
+    <Style Selector="TextBox">
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppControlRadius}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="ComboBox">
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppControlRadius}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="NumericUpDown">
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="CornerRadius" Value="{DynamicResource AppControlRadius}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <Style Selector="DatePicker">
+        <Setter Property="MinHeight" Value="{DynamicResource AppTouchTarget}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+
+    <!--  Sits in the same filter rows as the buttons and segments.  -->
+    <Style Selector="CheckBox">
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+
+</Styles>

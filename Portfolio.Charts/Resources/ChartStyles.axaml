@@ -1,0 +1,58 @@
+<Styles xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Ink colours for signed numbers. Applied as style classes rather than through a converter so
+        the brushes stay theme-aware, and only ever alongside a sign that is already visible in the
+        text itself.
+    -->
+    <Style Selector="TextBlock.metricValue">
+        <Setter Property="Foreground" Value="{DynamicResource ChartPrimaryInkBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.metricValue.positive">
+        <Setter Property="Foreground" Value="{DynamicResource ChartPositiveBrush}" />
+    </Style>
+
+    <Style Selector="TextBlock.metricValue.negative">
+        <Setter Property="Foreground" Value="{DynamicResource ChartNegativeBrush}" />
+    </Style>
+
+    <!--  Column headings of a data table double as sort buttons.  -->
+    <Style Selector="Button.columnHeader">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource ChartMutedInkBrush}" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="HorizontalContentAlignment" Value="Right" />
+    </Style>
+
+    <Style Selector="Button.columnHeader:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChartSubtleFillBrush}" />
+        <!--  Without this, Fluent's own hover setter decides the text colour.  -->
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource ChartPrimaryInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.columnHeader:pressed /template/ ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChartSubtleFillBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{DynamicResource ChartPrimaryInkBrush}" />
+    </Style>
+
+    <Style Selector="Button.columnHeader.leading">
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
+    <!--  Rows of a data table: a hairline rule, and a wash on the pinned total row.  -->
+    <Style Selector="Border.tableRow">
+        <Setter Property="BorderBrush" Value="{DynamicResource ChartBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="6,8" />
+    </Style>
+
+    <Style Selector="Border.tableRow.pinned">
+        <Setter Property="Background" Value="{DynamicResource ChartSubtleFillBrush}" />
+    </Style>
+
+</Styles>

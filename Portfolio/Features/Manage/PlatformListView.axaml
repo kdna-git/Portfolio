@@ -1,0 +1,157 @@
+<UserControl
+    x:Class="Portfolio.Features.Manage.PlatformListView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cc="using:Portfolio.Charts.Controls"
+    xmlns:manage="using:Portfolio.Features.Manage"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:Name="Root"
+    x:DataType="manage:PlatformListViewModel">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Portfolio/Features/Manage/HoldingTemplates.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{DynamicResource AppPagePadding}" Spacing="12">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                        <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Classes="primary"
+                        Command="{Binding AddPlatformCommand}"
+                        Content="New platform" />
+                </Grid>
+
+                <shared:ErrorBanner DataContext="{Binding}" />
+
+                <Border Classes="card" Padding="12">
+                    <StackPanel Spacing="10">
+                        <TextBox Text="{Binding SearchText}" PlaceholderText="Search platforms and their holdings" />
+
+                        <WrapPanel ItemSpacing="10" LineSpacing="10">
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Period" />
+                                <ComboBox
+                                    ItemsSource="{Binding PeriodOptions}"
+                                    SelectedItem="{Binding SelectedPeriod}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Sort by" />
+                                <ComboBox
+                                    ItemsSource="{Binding SortOptions}"
+                                    SelectedItem="{Binding SelectedSort}" />
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <WrapPanel ItemSpacing="8" LineSpacing="8">
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding ToggleSortDirectionCommand}"
+                                Content="Reverse order" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowCardsCommand}"
+                                Content="Cards"
+                                GroupName="PlatformViewMode"
+                                IsChecked="{Binding IsCardView, Mode=OneWay}" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowTableCommand}"
+                                Content="Table"
+                                GroupName="PlatformViewMode"
+                                IsChecked="{Binding IsTableView, Mode=OneWay}" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card" Padding="12,10">
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="{DynamicResource AppInkSecondaryBrush}"
+                        Text="{Binding TotalsSummary}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <!--
+                    The split comes first: "how much sits where" is the question a platform list exists
+                    to answer, and the donut and the rows share one set of colours.
+                -->
+                <cc:ChartCard
+                    Content="{Binding Distribution}"
+                    ContentHeight="{Binding ChartHeight}"
+                    Header="Balance by platform"
+                    IsVisible="{Binding HasAnyPlatforms}" />
+
+                <Border Classes="card" Padding="20" IsVisible="{Binding IsEmptyResult}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            IsVisible="{Binding HasAnyPlatforms}"
+                            Text="No platform matches that search." />
+                        <TextBlock
+                            MaxWidth="400"
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            IsVisible="{Binding !HasAnyPlatforms}"
+                            Text="A platform is wherever your money sits: a broker, a bank, a lending site. Everything else hangs off one."
+                            TextAlignment="Center" />
+                        <Button
+                            HorizontalAlignment="Center"
+                            Classes="primary"
+                            Command="{Binding AddPlatformCommand}"
+                            Content="Add a platform"
+                            IsVisible="{Binding !HasAnyPlatforms}" />
+                    </StackPanel>
+                </Border>
+
+                <ItemsControl
+                    IsVisible="{Binding IsCardView}"
+                    ItemTemplate="{StaticResource HoldingCardTemplate}"
+                    ItemsSource="{Binding Rows}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{ReflectionBinding ViewportLayout.Columns, FallbackValue=1}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    IsVisible="{Binding IsTableView}"
+                    VerticalScrollBarVisibility="Disabled">
+                    <Border MinWidth="880" Classes="card" Padding="6">
+                        <StackPanel>
+                            <ContentControl
+                                Content="header"
+                                ContentTemplate="{StaticResource HoldingTableHeaderTemplate}" />
+                            <ItemsControl
+                                ItemTemplate="{StaticResource HoldingTableRowTemplate}"
+                                ItemsSource="{Binding Rows}" />
+                        </StackPanel>
+                    </Border>
+                </ScrollViewer>
+
+                <!--  The same figures as a sortable matrix, for comparing down a column.  -->
+                <cc:ChartCard
+                    Content="{Binding Breakdown}"
+                    Header="Platforms side by side"
+                    IsVisible="{Binding HasAnyPlatforms}"
+                    Subheader="Tap a column heading to sort by it" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <shared:ConfirmationOverlay DataContext="{Binding Confirmation}" />
+    </Grid>
+</UserControl>

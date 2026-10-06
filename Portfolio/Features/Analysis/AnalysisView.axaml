@@ -1,0 +1,291 @@
+<UserControl
+    x:Class="Portfolio.Features.Analysis.AnalysisView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:analysis="using:Portfolio.Features.Analysis"
+    xmlns:cc="using:Portfolio.Charts.Controls"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:Name="Root"
+    x:DataType="analysis:AnalysisViewModel">
+
+    <UserControl.Resources>
+        <!--  One card per figure. Both section lists draw with it, so they cannot drift apart.  -->
+        <DataTemplate x:Key="SectionTemplate" x:DataType="shared:AnalysisSection">
+            <cc:ChartCard
+                Margin="0,0,0,12"
+                Content="{Binding Content}"
+                ContentHeight="{Binding Height}"
+                Header="{Binding Header}"
+                Subheader="{Binding Subheader}" />
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource AppPagePadding}" Spacing="12">
+
+            <!--  Title row  -->
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Classes="secondary"
+                    Command="{Binding GoBackCommand}"
+                    Content="Back"
+                    IsVisible="{Binding ShowBackButton}" />
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                    <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                </StackPanel>
+
+                <!--  Icon only: a phone's title row has no room for a second labelled button.  -->
+                <Button
+                    Grid.Column="2"
+                    Width="{DynamicResource AppTouchTarget}"
+                    MinHeight="{DynamicResource AppTouchTarget}"
+                    Margin="8,0,0,0"
+                    Padding="0"
+                    VerticalAlignment="Center"
+                    AutomationProperties.Name="Backup and sync"
+                    Classes="secondary"
+                    Command="{Binding OpenBackupCommand}"
+                    IsVisible="{Binding ShowBackupShortcut}"
+                    ToolTip.Tip="Backup &amp; sync">
+                    <Viewbox Width="20" Height="20">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Data="{StaticResource AppBackupIcon}"
+                            Fill="Transparent"
+                            Stroke="{DynamicResource AppInkBrush}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.8" />
+                    </Viewbox>
+                </Button>
+
+                <Button
+                    Grid.Column="3"
+                    Margin="8,0,0,0"
+                    VerticalAlignment="Center"
+                    Classes="primary"
+                    Command="{Binding AddEntryCommand}"
+                    Content="New entry"
+                    IsVisible="{Binding !IsEmptyPortfolio}" />
+            </Grid>
+
+            <shared:ErrorBanner DataContext="{Binding}" />
+
+            <!--
+                Pickers: what to look at, and over which period. The figure the comparison charts use
+                is chosen beside those charts further down, not here.
+            -->
+            <Border Classes="card" Padding="12" IsVisible="{Binding !IsEmptyPortfolio}">
+                <WrapPanel ItemSpacing="12" LineSpacing="10">
+                    <StackPanel
+                        MinWidth="220"
+                        IsVisible="{Binding ShowScopePicker}"
+                        Spacing="4">
+                        <TextBlock Classes="fieldLabel" Text="Scope" />
+                        <ComboBox
+                            ItemsSource="{Binding ScopeOptions}"
+                            SelectedItem="{Binding SelectedScope}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="shared:ScopeOption">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Text="{Binding DisplayLabel}"
+                                            TextTrimming="CharacterEllipsis" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            Margin="12,0,0,0"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource AppInkMutedBrush}"
+                                            Text="{Binding Group}" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel MinWidth="150" Spacing="4">
+                        <TextBlock Classes="fieldLabel" Text="Period" />
+                        <ComboBox
+                            ItemsSource="{Binding PeriodOptions}"
+                            SelectedItem="{Binding SelectedPeriod}" />
+                    </StackPanel>
+                </WrapPanel>
+            </Border>
+
+            <!--  First run: there is nothing to chart, so say what to do instead.  -->
+            <Border Classes="card" Padding="24" IsVisible="{Binding IsEmptyPortfolio}">
+                <StackPanel HorizontalAlignment="Center" Spacing="12">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Classes="pageTitle"
+                        Text="Nothing here yet" />
+                    <TextBlock
+                        MaxWidth="420"
+                        HorizontalAlignment="Center"
+                        Classes="pageSubtitle"
+                        Text="Add a platform first — a broker, a bank, a lending site — then the holdings you have on it, then the movements. Every figure on this screen is derived from those movements."
+                        TextAlignment="Center" />
+                    <Button
+                        HorizontalAlignment="Center"
+                        Classes="primary"
+                        Command="{Binding AddPlatformCommand}"
+                        Content="Add a platform" />
+
+                    <!--  The first thing a second device needs: its data, from the first one.  -->
+                    <TextBlock
+                        MaxWidth="420"
+                        Margin="0,8,0,0"
+                        HorizontalAlignment="Center"
+                        Classes="pageSubtitle"
+                        Text="Already keeping your portfolio on another device? Export a backup there and import it here."
+                        TextAlignment="Center" />
+                    <Button
+                        HorizontalAlignment="Center"
+                        Classes="secondary"
+                        Command="{Binding OpenBackupCommand}"
+                        Content="Import a backup" />
+                </StackPanel>
+            </Border>
+
+            <!--  Headline figures, three or four blocks depending on the mode.  -->
+            <ItemsControl ItemsSource="{Binding TileGroups}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="{ReflectionBinding ViewportLayout.WideColumns, FallbackValue=1}" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl Margin="0,0,10,10" Content="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <!--
+                Every figure comes from the view model's section lists, so the layout is written once
+                and adding a chart does not touch this file.
+            -->
+            <ItemsControl ItemTemplate="{StaticResource SectionTemplate}" ItemsSource="{Binding Sections}" />
+
+            <!--
+                The scope's parts side by side. The figure picker sits directly above the charts it
+                redraws: at the top of the page it changed charts half a screen away, and looked like
+                it did nothing at all.
+            -->
+            <StackPanel IsVisible="{Binding HasComparison}" Spacing="8">
+                <WrapPanel ItemSpacing="10" LineSpacing="6">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Classes="sectionTitle"
+                        Text="{Binding ComparisonTitle}" />
+                    <ComboBox
+                        MinWidth="170"
+                        IsVisible="{Binding ShowMetricPicker}"
+                        ItemsSource="{Binding MetricOptions}"
+                        SelectedItem="{Binding SelectedMetric}" />
+                </WrapPanel>
+
+                <ItemsControl ItemTemplate="{StaticResource SectionTemplate}" ItemsSource="{Binding ComparisonSections}" />
+            </StackPanel>
+
+            <!--  Children, as the way into a per-platform or per-holding view.  -->
+            <StackPanel
+                IsVisible="{Binding ChildSectionTitle, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                Spacing="8">
+                <TextBlock Classes="sectionTitle" Text="{Binding ChildSectionTitle}" />
+
+                <ItemsControl ItemsSource="{Binding ChildCards}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="{ReflectionBinding ViewportLayout.Columns, FallbackValue=1}" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="shared:ScopeCardViewModel">
+                            <Border
+                                Margin="0,0,10,10"
+                                Classes="card interactive"
+                                PointerPressed="OnCardPressed">
+                                <Grid RowDefinitions="Auto,Auto,Auto">
+                                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock
+                                                FontSize="15"
+                                                FontWeight="SemiBold"
+                                                Foreground="{DynamicResource AppInkBrush}"
+                                                Text="{Binding Name}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <TextBlock
+                                                FontSize="11"
+                                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                                Text="{Binding Kind}" />
+                                        </StackPanel>
+                                        <ContentControl
+                                            Grid.Column="1"
+                                            Width="72"
+                                            Height="30"
+                                            VerticalAlignment="Center"
+                                            Content="{Binding Sparkline}" />
+                                    </Grid>
+
+                                    <TextBlock
+                                        Grid.Row="1"
+                                        Margin="0,10,0,0"
+                                        FontSize="20"
+                                        FontWeight="Bold"
+                                        Foreground="{DynamicResource AppInkBrush}"
+                                        Text="{Binding ValueText}" />
+
+                                    <Grid
+                                        Grid.Row="2"
+                                        Margin="0,8,0,0"
+                                        ColumnDefinitions="*,*,*">
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                                Text="Earnings" />
+                                            <TextBlock
+                                                Classes="metricValue"
+                                                Classes.negative="{Binding EarningsAreNegative}"
+                                                Classes.positive="{Binding EarningsArePositive}"
+                                                FontSize="12"
+                                                Text="{Binding EarningsText}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1">
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                                Text="Return" />
+                                            <TextBlock
+                                                FontSize="12"
+                                                Foreground="{DynamicResource AppInkBrush}"
+                                                Text="{Binding ReturnText}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock
+                                                FontSize="10"
+                                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                                Text="Share" />
+                                            <TextBlock
+                                                FontSize="12"
+                                                Foreground="{DynamicResource AppInkBrush}"
+                                                Text="{Binding ShareText}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

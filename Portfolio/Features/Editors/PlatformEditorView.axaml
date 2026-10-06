@@ -1,0 +1,46 @@
+<UserControl
+    x:Class="Portfolio.Features.Editors.PlatformEditorView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editors="using:Portfolio.Features.Editors"
+    x:DataType="editors:PlatformEditorViewModel">
+
+    <Border Padding="18" MinWidth="320">
+        <StackPanel Spacing="14">
+            <TextBlock Classes="pageTitle" Text="{Binding Heading}" />
+
+            <TextBlock
+                Classes="pageSubtitle"
+                IsVisible="{Binding HasSummary}"
+                Text="{Binding Summary}" />
+
+            <StackPanel Spacing="4">
+                <TextBlock Classes="fieldLabel" Text="Name" />
+                <TextBox
+                    Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                    PlaceholderText="Broker, bank or lending site" />
+                <!--  A duplicate name is allowed: two accounts at one broker are a real thing.  -->
+                <TextBlock
+                    FontSize="11"
+                    Foreground="{DynamicResource AppDangerBrush}"
+                    IsVisible="{Binding HasNameWarning}"
+                    Text="{Binding NameWarning}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <StackPanel
+                HorizontalAlignment="Right"
+                Orientation="Horizontal"
+                Spacing="8">
+                <Button
+                    Classes="secondary"
+                    Command="{Binding CancelCommand}"
+                    Content="Cancel" />
+                <Button
+                    Classes="primary"
+                    Command="{Binding SaveCommand}"
+                    Content="{Binding SaveText}" />
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <WasmMainJSPath>wwwroot\main.js</WasmMainJSPath>
+    <!-- Culture data is needed for money and dates; see AppCulture for why it is not enough on its own. -->
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      Only the app, never Portfolio.EntityFramework: SQLite in WebAssembly needs a native build and a
+      mounted virtual filesystem to survive a reload. This head stores the portfolio as JSON in
+      localStorage instead, which needs neither.
+    -->
+    <ProjectReference Include="..\Portfolio\Portfolio.csproj" />
+    <ProjectReference Include="..\Portfolio.Storage\Portfolio.Storage.csproj" />
+  </ItemGroup>
+
+</Project>

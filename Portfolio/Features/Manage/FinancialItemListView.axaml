@@ -1,0 +1,211 @@
+<UserControl
+    x:Class="Portfolio.Features.Manage.FinancialItemListView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:manage="using:Portfolio.Features.Manage"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:Name="Root"
+    x:DataType="manage:FinancialItemListViewModel">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://Portfolio/Features/Manage/HoldingTemplates.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="{DynamicResource AppPagePadding}" Spacing="12">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                        <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        VerticalAlignment="Center"
+                        Classes="primary"
+                        Command="{Binding AddHoldingCommand}"
+                        Content="New holding" />
+                </Grid>
+
+                <shared:ErrorBanner DataContext="{Binding}" />
+
+                <Border Classes="card" Padding="12">
+                    <StackPanel Spacing="10">
+                        <TextBox Text="{Binding SearchText}" PlaceholderText="Search holdings, platforms and types" />
+
+                        <WrapPanel ItemSpacing="10" LineSpacing="10">
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Period" />
+                                <ComboBox
+                                    ItemsSource="{Binding PeriodOptions}"
+                                    SelectedItem="{Binding SelectedPeriod}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="160" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Platform" />
+                                <ComboBox
+                                    ItemsSource="{Binding PlatformFilters}"
+                                    SelectedItem="{Binding SelectedPlatformFilter}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Type" />
+                                <ComboBox
+                                    ItemsSource="{Binding TypeFilters}"
+                                    SelectedItem="{Binding SelectedTypeFilter}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Sort by" />
+                                <ComboBox
+                                    ItemsSource="{Binding SortOptions}"
+                                    SelectedItem="{Binding SelectedSort}" />
+                            </StackPanel>
+                            <StackPanel MinWidth="140" Spacing="4">
+                                <TextBlock Classes="fieldLabel" Text="Group" />
+                                <ComboBox
+                                    ItemsSource="{Binding GroupingOptions}"
+                                    SelectedItem="{Binding SelectedGrouping}" />
+                            </StackPanel>
+                        </WrapPanel>
+
+                        <WrapPanel ItemSpacing="8" LineSpacing="8">
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding ToggleSortDirectionCommand}"
+                                Content="Reverse order" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowCardsCommand}"
+                                Content="Cards"
+                                GroupName="HoldingViewMode"
+                                IsChecked="{Binding IsCardView, Mode=OneWay}" />
+                            <RadioButton
+                                Classes="segment"
+                                Command="{Binding ShowTableCommand}"
+                                Content="Table"
+                                GroupName="HoldingViewMode"
+                                IsChecked="{Binding IsTableView, Mode=OneWay}" />
+                            <CheckBox
+                                Content="Hide holdings with no entries"
+                                IsChecked="{Binding HideDormant}" />
+                            <Button
+                                Classes="ghost"
+                                Command="{Binding ClearFiltersCommand}"
+                                Content="Clear filters" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="card" Padding="12,10">
+                    <TextBlock
+                        FontSize="11"
+                        Foreground="{DynamicResource AppInkSecondaryBrush}"
+                        Text="{Binding TotalsSummary}"
+                        TextWrapping="Wrap" />
+                </Border>
+
+                <Border Classes="card" Padding="20" IsVisible="{Binding IsEmptyResult}">
+                    <StackPanel HorizontalAlignment="Center" Spacing="10">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            IsVisible="{Binding HasAnyHoldings}"
+                            Text="Nothing matches these filters." />
+                        <TextBlock
+                            MaxWidth="400"
+                            HorizontalAlignment="Center"
+                            Classes="pageSubtitle"
+                            IsVisible="{Binding !HasAnyHoldings}"
+                            Text="A holding is one thing you own on one platform: a fund position, a loan, a savings pot."
+                            TextAlignment="Center" />
+                        <Button
+                            HorizontalAlignment="Center"
+                            Classes="primary"
+                            Command="{Binding AddHoldingCommand}"
+                            Content="Add a holding"
+                            IsVisible="{Binding !HasAnyHoldings}" />
+                    </StackPanel>
+                </Border>
+
+                <!--  Grouped cards  -->
+                <ItemsControl IsVisible="{Binding IsCardView}" ItemsSource="{Binding Groups}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="manage:HoldingGroupViewModel">
+                            <StackPanel Margin="0,0,0,6">
+                                <Grid
+                                    Margin="4,8,4,6"
+                                    ColumnDefinitions="*,Auto"
+                                    IsVisible="{Binding HasHeader}">
+                                    <TextBlock
+                                        Grid.Column="0"
+                                        Classes="sectionTitle"
+                                        Text="{Binding Header}" />
+                                    <TextBlock
+                                        Grid.Column="1"
+                                        FontSize="11"
+                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                        Text="{Binding Summary}" />
+                                </Grid>
+
+                                <ItemsControl
+                                    ItemTemplate="{StaticResource HoldingCardTemplate}"
+                                    ItemsSource="{Binding Rows}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="{ReflectionBinding Columns, FallbackValue=1}" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!--  Grouped table  -->
+                <ScrollViewer
+                    HorizontalScrollBarVisibility="Auto"
+                    IsVisible="{Binding IsTableView}"
+                    VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl MinWidth="880" ItemsSource="{Binding Groups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="manage:HoldingGroupViewModel">
+                                <StackPanel Margin="0,0,0,10">
+                                    <Grid
+                                        Margin="6,8,6,4"
+                                        ColumnDefinitions="*,Auto"
+                                        IsVisible="{Binding HasHeader}">
+                                        <TextBlock
+                                            Grid.Column="0"
+                                            Classes="sectionTitle"
+                                            Text="{Binding Header}" />
+                                        <TextBlock
+                                            Grid.Column="1"
+                                            FontSize="11"
+                                            Foreground="{DynamicResource AppInkMutedBrush}"
+                                            Text="{Binding Summary}" />
+                                    </Grid>
+
+                                    <Border Classes="card" Padding="6">
+                                        <StackPanel>
+                                            <ContentControl
+                                                Content="header"
+                                                ContentTemplate="{StaticResource HoldingTableHeaderTemplate}" />
+                                            <ItemsControl
+                                                ItemTemplate="{StaticResource HoldingTableRowTemplate}"
+                                                ItemsSource="{Binding Rows}" />
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </ScrollViewer>
+
+        <shared:ConfirmationOverlay DataContext="{Binding Confirmation}" />
+    </Grid>
+</UserControl>

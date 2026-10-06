@@ -1,0 +1,112 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Portfolio.Charts.Controls">
+
+    <!--
+        Design tokens for every figure in the library. Light and dark are two selected sets of
+        values rather than one flipped automatically: the dark steps were chosen for the dark
+        surface and validated against it.
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="ChartSurfaceBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="ChartPageBrush" Color="#f9f9f7" />
+            <SolidColorBrush x:Key="ChartSubtleFillBrush" Color="#f4f4f1" />
+            <SolidColorBrush x:Key="ChartPrimaryInkBrush" Color="#0b0b0b" />
+            <SolidColorBrush x:Key="ChartSecondaryInkBrush" Color="#52514e" />
+            <SolidColorBrush x:Key="ChartMutedInkBrush" Color="#898781" />
+            <SolidColorBrush x:Key="ChartBorderBrush" Color="#1a0b0b0b" />
+            <SolidColorBrush x:Key="ChartGridBrush" Color="#e1e0d9" />
+            <SolidColorBrush x:Key="ChartHeroBrush" Color="#0f172b" />
+            <SolidColorBrush x:Key="ChartHeroInkBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="ChartHeroMutedInkBrush" Color="#b6c0d0" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="ChartSurfaceBrush" Color="#16181b" />
+            <SolidColorBrush x:Key="ChartPageBrush" Color="#0d0e10" />
+            <SolidColorBrush x:Key="ChartSubtleFillBrush" Color="#1d2024" />
+            <SolidColorBrush x:Key="ChartPrimaryInkBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="ChartSecondaryInkBrush" Color="#c3c2b7" />
+            <SolidColorBrush x:Key="ChartMutedInkBrush" Color="#898781" />
+            <SolidColorBrush x:Key="ChartBorderBrush" Color="#26ffffff" />
+            <SolidColorBrush x:Key="ChartGridBrush" Color="#2c2c2a" />
+            <SolidColorBrush x:Key="ChartHeroBrush" Color="#1f2733" />
+            <SolidColorBrush x:Key="ChartHeroInkBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="ChartHeroMutedInkBrush" Color="#aab4c4" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <!-- Status inks are fixed in both themes: a status colour must never read as a series. -->
+    <SolidColorBrush x:Key="ChartPositiveBrush" Color="#0ca30c" />
+    <SolidColorBrush x:Key="ChartNegativeBrush" Color="#d03b3b" />
+    <SolidColorBrush x:Key="ChartWarningBrush" Color="#fab219" />
+
+    <CornerRadius x:Key="ChartCardRadius">16</CornerRadius>
+    <CornerRadius x:Key="ChartTileRadius">12</CornerRadius>
+    <Thickness x:Key="ChartCardPadding">16</Thickness>
+
+    <ControlTheme x:Key="{x:Type controls:ChartCard}" TargetType="controls:ChartCard">
+        <Setter Property="Background" Value="{DynamicResource ChartSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChartBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="{DynamicResource ChartCardPadding}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="controls:ChartCard">
+                <Border
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="{DynamicResource ChartCardRadius}">
+                    <Grid Margin="{TemplateBinding Padding}" RowDefinitions="Auto,*,Auto">
+
+                        <!--  Heading: title and subtitle on the left, controls on the right.  -->
+                        <Grid
+                            Grid.Row="0"
+                            Margin="0,0,0,12"
+                            ColumnDefinitions="*,Auto"
+                            IsVisible="{TemplateBinding Header,
+                                                        Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                <TextBlock
+                                    FontSize="15"
+                                    FontWeight="SemiBold"
+                                    Foreground="{DynamicResource ChartPrimaryInkBrush}"
+                                    Text="{TemplateBinding Header}"
+                                    TextTrimming="CharacterEllipsis" />
+                                <TextBlock
+                                    Margin="0,2,0,0"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource ChartMutedInkBrush}"
+                                    IsVisible="{TemplateBinding Subheader,
+                                                                Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                                    Text="{TemplateBinding Subheader}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                            <ContentPresenter
+                                Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Actions}" />
+                        </Grid>
+
+                        <ContentPresenter
+                            Grid.Row="1"
+                            Height="{TemplateBinding ContentHeight}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}" />
+
+                        <ContentPresenter
+                            Grid.Row="2"
+                            Margin="0,10,0,0"
+                            Content="{TemplateBinding Footer}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+
+</ResourceDictionary>

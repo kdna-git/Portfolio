@@ -1,0 +1,54 @@
+<UserControl
+    x:Class="Portfolio.Features.Shell.HeaderView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:MVVM.Core.ViewModels"
+    x:DataType="vm:HeaderViewModel">
+
+    <Grid ColumnDefinitions="Auto,*,Auto">
+        <TextBlock
+            Grid.Column="0"
+            Margin="14,0,0,0"
+            VerticalAlignment="Center"
+            FontSize="12"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource AppOnBrandBrush}"
+            Text="{Binding Title}" />
+
+        <TextBlock
+            Grid.Column="1"
+            Margin="10,0"
+            VerticalAlignment="Center"
+            FontSize="11"
+            Foreground="{DynamicResource AppOnBrandMutedBrush}"
+            Text="{Binding Subtitle}"
+            TextTrimming="CharacterEllipsis" />
+
+        <StackPanel
+            Grid.Column="2"
+            Margin="0,0,2,0"
+            Orientation="Horizontal">
+            <Button
+                Classes="caption"
+                Command="{Binding MinimizeWindowCommand}"
+                CommandParameter="{Binding $parent[Window]}"
+                ToolTip.Tip="Minimise">
+                <TextBlock Text="&#x2014;" />
+            </Button>
+            <Button
+                Classes="caption"
+                Command="{Binding MaximizeWindowCommand}"
+                CommandParameter="{Binding $parent[Window]}"
+                ToolTip.Tip="Maximise">
+                <TextBlock Text="&#x25A1;" />
+            </Button>
+            <Button
+                Classes="caption close"
+                Command="{Binding ShutdownWindowCommand}"
+                CommandParameter="{Binding $parent[Window]}"
+                ToolTip.Tip="Close">
+                <TextBlock Text="&#x2715;" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

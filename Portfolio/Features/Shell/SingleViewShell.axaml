@@ -1,0 +1,52 @@
+<UserControl
+    x:Class="Portfolio.Features.Shell.SingleViewShell"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModalControl"
+    xmlns:layout="using:MVVM.Core.Layout"
+    xmlns:vm="using:MVVM.Core.ViewModels"
+    x:DataType="vm:MainViewModel">
+
+    <!--
+        Android, iOS and the browser all land here. The same shell covers a phone in portrait and a
+        desktop browser window: the navigation moves between a bottom bar and a side rail based on the
+        measured width, and the safe-area padding keeps content clear of a display cutout or a
+        gesture bar.
+    -->
+    <Grid layout:Adaptive.Store="{Binding Layout}" Background="{DynamicResource AppPageBrush}">
+        <Grid ColumnDefinitions="Auto,*" RowDefinitions="*,Auto">
+
+            <Border
+                Grid.Row="0"
+                Grid.RowSpan="2"
+                Grid.Column="0"
+                Width="184"
+                Background="{DynamicResource AppBrandBrush}"
+                IsVisible="{Binding Layout.UsesSideNavigation}">
+                <ContentControl Content="{Binding NavigationBarViewModel}" />
+            </Border>
+
+            <ContentControl
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="{Binding Layout.SafeAreaPadding}"
+                Content="{Binding CurrentViewModel}" />
+
+            <Border
+                Grid.Row="1"
+                Grid.Column="1"
+                Background="{DynamicResource AppBrandBrush}"
+                IsVisible="{Binding !Layout.UsesSideNavigation}">
+                <ContentControl Content="{Binding NavigationBarViewModel}" />
+            </Border>
+        </Grid>
+
+        <controls:Modal
+            BackgroundClickCommand="{Binding CloseModalCommand}"
+            ContentBackground="{DynamicResource AppSurfaceBrush}"
+            ContentCornerRadius="{DynamicResource AppCardRadius}"
+            IsOpen="{Binding IsModalOpen}">
+            <ContentControl MinWidth="280" Content="{Binding CurrentModalViewModel}" />
+        </controls:Modal>
+    </Grid>
+</UserControl>

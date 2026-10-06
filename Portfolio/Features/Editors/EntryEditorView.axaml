@@ -1,0 +1,196 @@
+<UserControl
+    x:Class="Portfolio.Features.Editors.EntryEditorView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:editors="using:Portfolio.Features.Editors"
+    x:DataType="editors:EntryEditorViewModel">
+
+    <ScrollViewer
+        MaxHeight="760"
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Auto">
+        <Border Padding="18" MinWidth="320">
+            <StackPanel Spacing="14">
+                <TextBlock Classes="pageTitle" Text="{Binding Heading}" />
+
+                <StackPanel IsVisible="{Binding !HasPlatforms}" Spacing="10">
+                    <TextBlock
+                        Classes="pageSubtitle"
+                        Text="Entries hang off a holding, and there are no platforms yet." />
+                    <Button
+                        Classes="primary"
+                        Command="{Binding AddPlatformCommand}"
+                        Content="Add a platform first" />
+                </StackPanel>
+
+                <StackPanel IsVisible="{Binding HasPlatforms}" Spacing="14">
+
+                    <!--  Where and when  -->
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Platform" />
+                            <ComboBox
+                                ItemsSource="{Binding Platforms}"
+                                SelectedItem="{Binding SelectedPlatform}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Holding" />
+                            <ComboBox
+                                ItemsSource="{Binding Holdings}"
+                                SelectedItem="{Binding SelectedHolding}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Date" />
+                            <DatePicker SelectedDate="{Binding Date}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="fieldLabel" Text="Note" />
+                        <TextBox Text="{Binding Note}" PlaceholderText="Optional" />
+                    </StackPanel>
+
+                    <!--
+                        Amounts are grouped by what they do rather than listed flat, because which
+                        pocket the money moves between is the thing that is easy to get wrong.
+                    -->
+                    <TextBlock Classes="sectionTitle" Text="Cash in and out of the platform" />
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Deposit" />
+                            <NumericUpDown Minimum="0" Value="{Binding Deposit}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Withdrawal" />
+                            <NumericUpDown Minimum="0" Value="{Binding Withdrawal}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Classes="sectionTitle" Text="Between platform cash and the asset" />
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Invested" />
+                            <NumericUpDown Minimum="0" Value="{Binding Investment}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Capital repaid" />
+                            <NumericUpDown Minimum="0" Value="{Binding PrincipalRepayment}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Classes="sectionTitle" Text="Income" />
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Interest" />
+                            <NumericUpDown Minimum="0" Value="{Binding Interest}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Bonus" />
+                            <NumericUpDown Minimum="0" Value="{Binding Bonus}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Classes="sectionTitle" Text="Costs and losses" />
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Tax" />
+                            <NumericUpDown Minimum="0" Value="{Binding Tax}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Fee" />
+                            <NumericUpDown Minimum="0" Value="{Binding Fee}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Written off" />
+                            <NumericUpDown Minimum="0" Value="{Binding DefaultLoss}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <TextBlock Classes="sectionTitle" Text="Reported value" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Classes="fieldLabel" Text="Market value on this date" />
+                        <NumericUpDown
+                            Minimum="0"
+                            Value="{Binding MarketValue, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock
+                            FontSize="11"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Leave empty unless the platform reported a value. Each value anchors the holding's worth until the next one."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <!--  Live preview: what this entry will actually do to the figures.  -->
+                    <Border
+                        Padding="12"
+                        Background="{DynamicResource AppSurfaceAltBrush}"
+                        CornerRadius="{DynamicResource AppControlRadius}">
+                        <StackPanel Spacing="8">
+                            <UniformGrid Columns="3">
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                        Text="Balance change" />
+                                    <TextBlock
+                                        Classes="metricValue"
+                                        Classes.negative="{Binding BalanceChangeIsNegative}"
+                                        Classes.positive="{Binding BalanceChangeIsPositive}"
+                                        FontSize="15"
+                                        FontWeight="SemiBold"
+                                        Text="{Binding BalanceChangeText}" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                        Text="Invested change" />
+                                    <TextBlock
+                                        FontSize="15"
+                                        Foreground="{DynamicResource AppInkBrush}"
+                                        Text="{Binding InvestedChangeText}" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <TextBlock
+                                        FontSize="10"
+                                        Foreground="{DynamicResource AppInkMutedBrush}"
+                                        Text="Earnings" />
+                                    <TextBlock
+                                        FontSize="15"
+                                        Foreground="{DynamicResource AppInkBrush}"
+                                        Text="{Binding EarningsChangeText}" />
+                                </StackPanel>
+                            </UniformGrid>
+
+                            <TextBlock
+                                FontSize="11"
+                                Foreground="{DynamicResource AppDangerBrush}"
+                                IsVisible="{Binding HasWarning}"
+                                Text="{Binding Warning}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                    <Button
+                        Grid.Column="0"
+                        Classes="ghost"
+                        Command="{Binding ClearAmountsCommand}"
+                        Content="Clear amounts"
+                        IsVisible="{Binding HasPlatforms}" />
+                    <Button
+                        Grid.Column="2"
+                        Margin="0,0,8,0"
+                        Classes="secondary"
+                        Command="{Binding CancelCommand}"
+                        Content="Cancel" />
+                    <Button
+                        Grid.Column="3"
+                        Classes="primary"
+                        Command="{Binding SaveCommand}"
+                        Content="{Binding SaveText}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

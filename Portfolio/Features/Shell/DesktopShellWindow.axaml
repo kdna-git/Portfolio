@@ -1,0 +1,71 @@
+<core:ChromeWindow
+    x:Class="Portfolio.Features.Shell.DesktopShellWindow"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ModalControl"
+    xmlns:core="using:MVVM.Core.Views"
+    xmlns:layout="using:MVVM.Core.Layout"
+    xmlns:vm="using:MVVM.Core.ViewModels"
+    Title="Portfolio"
+    Width="1280"
+    Height="860"
+    MinWidth="420"
+    MinHeight="420"
+    x:DataType="vm:MainViewModel"
+    Background="Transparent"
+    CanResize="True"
+    Icon="/Assets/avalonia-logo.ico"
+    WindowDecorations="None"
+    WindowStartupLocation="CenterScreen">
+
+    <Border
+        Background="{DynamicResource AppPageBrush}"
+        ClipToBounds="True"
+        CornerRadius="{Binding $parent[core:ChromeWindow].EffectiveCornerRadius}">
+
+        <!--
+            The whole shell publishes its size into the layout store, so every screen's column counts
+            and chart heights follow the window rather than the operating system. Dragging this window
+            narrow gives the same single-column layout a phone gets.
+        -->
+        <Grid layout:Adaptive.Store="{Binding Layout}" RowDefinitions="32,*">
+
+            <Border
+                Name="PART_Header"
+                Grid.Row="0"
+                Background="{DynamicResource AppBrandBrush}">
+                <ContentControl Content="{Binding HeaderViewModel}" />
+            </Border>
+
+            <Grid Grid.Row="1" ColumnDefinitions="Auto,*">
+                <Border
+                    Grid.Column="0"
+                    Width="184"
+                    Background="{DynamicResource AppBrandBrush}"
+                    IsVisible="{Binding Layout.UsesSideNavigation}">
+                    <ContentControl Content="{Binding NavigationBarViewModel}" />
+                </Border>
+
+                <ContentControl Grid.Column="1" Content="{Binding CurrentViewModel}" />
+            </Grid>
+
+            <!--  A narrow desktop window gets the phone's bottom bar rather than a cramped rail.  -->
+            <Border
+                Grid.Row="1"
+                VerticalAlignment="Bottom"
+                Background="{DynamicResource AppBrandBrush}"
+                IsVisible="{Binding !Layout.UsesSideNavigation}">
+                <ContentControl Content="{Binding NavigationBarViewModel}" />
+            </Border>
+
+            <controls:Modal
+                Grid.Row="1"
+                BackgroundClickCommand="{Binding CloseModalCommand}"
+                ContentBackground="{DynamicResource AppSurfaceBrush}"
+                ContentCornerRadius="{DynamicResource AppCardRadius}"
+                IsOpen="{Binding IsModalOpen}">
+                <ContentControl MinWidth="320" Content="{Binding CurrentModalViewModel}" />
+            </controls:Modal>
+        </Grid>
+    </Border>
+</core:ChromeWindow>

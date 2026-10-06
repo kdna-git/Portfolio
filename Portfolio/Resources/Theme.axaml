@@ -1,0 +1,69 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Application tokens. Both variants are defined explicitly: dark is a chosen set of values, not
+        an inversion. The chart library brings its own matching tokens, so figures and chrome agree.
+    -->
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="AppPageBrush" Color="#f4f5f7" />
+            <SolidColorBrush x:Key="AppSurfaceBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#f1f5f9" />
+            <SolidColorBrush x:Key="AppBrandBrush" Color="#0f172b" />
+            <SolidColorBrush x:Key="AppBrandAltBrush" Color="#1e293b" />
+            <SolidColorBrush x:Key="AppOnBrandBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="AppOnBrandMutedBrush" Color="#b6c0d0" />
+            <SolidColorBrush x:Key="AppInkBrush" Color="#0b0b0b" />
+            <SolidColorBrush x:Key="AppInkSecondaryBrush" Color="#52514e" />
+            <SolidColorBrush x:Key="AppInkMutedBrush" Color="#7a7a75" />
+            <SolidColorBrush x:Key="AppBorderBrush" Color="#1f0b0b0b" />
+            <SolidColorBrush x:Key="AppAccentBrush" Color="#2a78d6" />
+            <SolidColorBrush x:Key="AppAccentHoverBrush" Color="#1f63b8" />
+            <SolidColorBrush x:Key="AppAccentPressedBrush" Color="#184f95" />
+            <SolidColorBrush x:Key="AppAccentWashBrush" Color="#142a78d6" />
+            <SolidColorBrush x:Key="AppDangerBrush" Color="#d03b3b" />
+            <SolidColorBrush x:Key="AppDangerWashBrush" Color="#14d03b3b" />
+            <SolidColorBrush x:Key="AppDangerWashHoverBrush" Color="#2ed03b3b" />
+            <!-- Hover and pressed washes for quiet buttons, on top of whatever surface they sit on. -->
+            <SolidColorBrush x:Key="AppHoverWashBrush" Color="#120b0b0b" />
+            <SolidColorBrush x:Key="AppPressedWashBrush" Color="#1f0b0b0b" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="AppPageBrush" Color="#0d0e10" />
+            <SolidColorBrush x:Key="AppSurfaceBrush" Color="#16181b" />
+            <SolidColorBrush x:Key="AppSurfaceAltBrush" Color="#1d2024" />
+            <SolidColorBrush x:Key="AppBrandBrush" Color="#1f2733" />
+            <SolidColorBrush x:Key="AppBrandAltBrush" Color="#2a3443" />
+            <SolidColorBrush x:Key="AppOnBrandBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="AppOnBrandMutedBrush" Color="#aab4c4" />
+            <SolidColorBrush x:Key="AppInkBrush" Color="#ffffff" />
+            <SolidColorBrush x:Key="AppInkSecondaryBrush" Color="#c3c2b7" />
+            <SolidColorBrush x:Key="AppInkMutedBrush" Color="#898781" />
+            <SolidColorBrush x:Key="AppBorderBrush" Color="#26ffffff" />
+            <SolidColorBrush x:Key="AppAccentBrush" Color="#3987e5" />
+            <!-- Dark mode lightens on hover rather than darkening: the surface is already dark. -->
+            <SolidColorBrush x:Key="AppAccentHoverBrush" Color="#5598e7" />
+            <SolidColorBrush x:Key="AppAccentPressedBrush" Color="#6da7ec" />
+            <SolidColorBrush x:Key="AppAccentWashBrush" Color="#243987e5" />
+            <SolidColorBrush x:Key="AppDangerBrush" Color="#e66767" />
+            <SolidColorBrush x:Key="AppDangerWashBrush" Color="#24e66767" />
+            <SolidColorBrush x:Key="AppDangerWashHoverBrush" Color="#3de66767" />
+            <SolidColorBrush x:Key="AppHoverWashBrush" Color="#1affffff" />
+            <SolidColorBrush x:Key="AppPressedWashBrush" Color="#2effffff" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
+    <CornerRadius x:Key="AppCardRadius">16</CornerRadius>
+    <CornerRadius x:Key="AppControlRadius">8</CornerRadius>
+    <Thickness x:Key="AppPagePadding">12</Thickness>
+
+    <!--
+        Smallest comfortable tap target. Pointer-driven layouts can be tighter, but a single number
+        used everywhere is what stops the Android build turning into a game of darts.
+    -->
+    <x:Double x:Key="AppTouchTarget">44</x:Double>
+
+    <!--  Backup and sync: two circling arrows, in the 24-unit stroke style of the navigation icons.  -->
+    <StreamGeometry x:Key="AppBackupIcon">M20 11a8 8 0 0 0 -14.9 -3.5 M4 4v4h4 M4 13a8 8 0 0 0 14.9 3.5 M20 20v-4h-4</StreamGeometry>
+
+</ResourceDictionary>

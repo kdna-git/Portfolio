@@ -1,0 +1,108 @@
+<UserControl
+    x:Class="Portfolio.Charts.Views.DistributionChartView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:Portfolio.Charts.Behaviors"
+    xmlns:conv="using:Portfolio.Charts.Converters"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+    xmlns:vm="using:Portfolio.Charts.ViewModels"
+    x:Name="Root"
+    x:DataType="vm:DistributionChartViewModel">
+
+    <!--
+        The donut and its list are one component on purpose. Three of the light-mode slot colours sit
+        below 3:1 against a white surface, so the figure owes the reader a non-colour path to the
+        same numbers; the list is also where zero and negative entries live, since a slice cannot
+        represent them without distorting the proportions.
+    -->
+    <Grid RowDefinitions="*,Auto">
+
+        <Grid Grid.Row="0" MinHeight="180">
+            <lvc:PieChart
+                behaviors:ChartScroll.PassThrough="True"
+                IsVisible="{Binding !IsEmpty}"
+                LegendPosition="Hidden"
+                Series="{Binding Series}"
+                TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                TooltipPosition="{Binding TooltipPosition}"
+                TooltipTextPaint="{Binding TooltipTextPaint}"
+                TooltipTextSize="{Binding TooltipTextSize}" />
+
+            <!--  Total in the hole of the donut: the headline the slices add up to.  -->
+            <StackPanel
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsHitTestVisible="False"
+                IsVisible="{Binding !IsEmpty}">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="11"
+                    Foreground="{DynamicResource ChartMutedInkBrush}"
+                    Text="Total" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="20"
+                    FontWeight="SemiBold"
+                    Foreground="{DynamicResource ChartPrimaryInkBrush}"
+                    Text="{Binding TotalText}" />
+            </StackPanel>
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="13"
+                Foreground="{DynamicResource ChartMutedInkBrush}"
+                IsVisible="{Binding IsEmpty}"
+                Text="{Binding EmptyMessage}"
+                TextWrapping="Wrap" />
+        </Grid>
+
+        <StackPanel Grid.Row="1" Margin="0,8,0,0">
+            <ItemsControl ItemsSource="{Binding Rows}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:DistributionRow">
+                        <Grid Margin="0,2" ColumnDefinitions="10,*,Auto,54">
+                            <Border
+                                Grid.Column="0"
+                                Width="8"
+                                Height="8"
+                                VerticalAlignment="Center"
+                                Background="{Binding Color, Converter={x:Static conv:ChartConverters.HexToBrush}}"
+                                CornerRadius="2" />
+                            <TextBlock
+                                Grid.Column="1"
+                                Margin="8,0"
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Foreground="{DynamicResource ChartSecondaryInkBrush}"
+                                Text="{Binding Label}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Foreground="{DynamicResource ChartPrimaryInkBrush}"
+                                Text="{Binding ValueText}" />
+                            <TextBlock
+                                Grid.Column="3"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Foreground="{DynamicResource ChartMutedInkBrush}"
+                                Text="{Binding ShareText}" />
+                        </Grid>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <TextBlock
+                Margin="0,6,0,0"
+                FontSize="11"
+                FontStyle="Italic"
+                Foreground="{DynamicResource ChartMutedInkBrush}"
+                IsVisible="{Binding ExcludedNote, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                Text="{Binding ExcludedNote}"
+                TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</UserControl>

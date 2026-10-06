@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
+	<!--
+		No INTERNET permission: the app is entirely local, so it should not be able to send anything
+		anywhere. allowBackup is off because the database is a personal ledger.
+	-->
+	<application
+		android:label="Portfolio"
+		android:icon="@drawable/Icon"
+		android:allowBackup="false"
+		android:supportsRtl="true" />
+</manifest>

@@ -1,0 +1,38 @@
+<UserControl
+    x:Class="Portfolio.Charts.Views.MetricTileGroupView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Portfolio.Charts.ViewModels"
+    x:DataType="vm:MetricTileGroup">
+
+    <!--
+        A block of the dashboard: one headline figure and the tiles that explain it. The column count
+        comes from the group rather than from this view, so the host can drive it from the viewport
+        width without this control knowing anything about breakpoints.
+    -->
+    <StackPanel Spacing="8">
+        <TextBlock
+            FontSize="12"
+            FontWeight="SemiBold"
+            Foreground="{DynamicResource ChartMutedInkBrush}"
+            IsVisible="{Binding Title, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+            Text="{Binding Title}" />
+
+        <ContentControl
+            Content="{Binding Hero}"
+            IsVisible="{Binding Hero, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+        <ItemsControl ItemsSource="{Binding Tiles}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Columns="{ReflectionBinding Columns, FallbackValue=2}" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl Margin="0,0,8,8" Content="{Binding}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

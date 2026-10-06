@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Portfolio</title>
+    <meta charset="UTF-8">
+    <!--
+        viewport-fit=cover lets the app paint behind a notch; the shell keeps content clear of it with
+        the platform's safe-area insets. user-scalable=no because the app does its own layout
+        adaptation and pinch-zooming a canvas-rendered UI only blurs it.
+    -->
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#0f172b" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#16181b" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="./favicon.ico">
+    <link rel="stylesheet" href="./app.css" />
+</head>
+
+<body>
+<div id="out">
+    <div class="avalonia-splash">
+        <div class="avalonia-splash-inner">
+            <div class="avalonia-splash-mark"></div>
+            <p>Loading your portfolio…</p>
+        </div>
+    </div>
+</div>
+<script type='module' src="./main.js"></script>
+</body>
+
+</html>

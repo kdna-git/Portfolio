@@ -1,0 +1,33 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ModalControl">
+
+    <ControlTheme x:Key="{x:Type local:Modal}" TargetType="local:Modal">
+        <!--  Scrim: black at ~45% opacity.  -->
+        <Setter Property="Background" Value="#73000000" />
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="Template">
+            <ControlTemplate TargetType="local:Modal">
+                <Grid
+                    x:Name="PART_BackgroundGrid"
+                    Background="{TemplateBinding Background}"
+                    IsVisible="{TemplateBinding IsOpen}">
+                    <Border
+                        x:Name="PART_ModalContent"
+                        Margin="12"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Background="{TemplateBinding ContentBackground}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        BoxShadow="0 8 24 0 #40000000"
+                        ClipToBounds="True"
+                        CornerRadius="{TemplateBinding ContentCornerRadius}">
+                        <ContentPresenter Content="{TemplateBinding Content}" />
+                    </Border>
+                </Grid>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

@@ -1,0 +1,83 @@
+/*
+   Page chrome around the WebAssembly canvas. The app itself draws everything else, so this only has
+   to cover the gap before the runtime starts — and get out of the way of touch scrolling once it has.
+*/
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #f4f5f7;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    /* The app handles its own gestures; the browser's pull-to-refresh and overscroll fight it. */
+    overscroll-behavior: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#out {
+    height: 100%;
+    width: 100%;
+}
+
+#out > canvas {
+    /* Stops the browser from hijacking swipes meant for the app's own scrolling. */
+    touch-action: none;
+}
+
+.avalonia-splash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.avalonia-splash-inner {
+    text-align: center;
+    color: #52514e;
+}
+
+.avalonia-splash-mark {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 14px;
+    border-radius: 12px;
+    background: #0f172b;
+    animation: pulse 1.4s ease-in-out infinite;
+}
+
+.avalonia-splash p {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.55; transform: scale(0.93); }
+}
+
+/* Dark mode is selected rather than inverted, to match the app's own dark surfaces. */
+@media (prefers-color-scheme: dark) {
+    html, body {
+        background: #0d0e10;
+    }
+
+    .avalonia-splash-inner {
+        color: #c3c2b7;
+    }
+
+    .avalonia-splash-mark {
+        background: #2a3443;
+    }
+}
+
+/*
+   Avalonia finds the splash by the class name `avalonia-splash` and adds `splash-close` once the app
+   has taken over, so the name is load-bearing rather than decorative.
+*/
+.avalonia-splash.splash-close {
+    display: none;
+    opacity: 0;
+}

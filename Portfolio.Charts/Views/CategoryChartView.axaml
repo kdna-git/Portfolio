@@ -1,0 +1,36 @@
+<UserControl
+    x:Class="Portfolio.Charts.Views.CategoryChartView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="using:Portfolio.Charts.Behaviors"
+    xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+    xmlns:vm="using:Portfolio.Charts.ViewModels"
+    x:DataType="vm:CategoryChartViewModel">
+
+    <Grid>
+        <lvc:CartesianChart
+            behaviors:ChartScroll.PassThrough="True"
+            IsVisible="{Binding !IsEmpty}"
+            LegendBackgroundPaint="{Binding LegendBackgroundPaint}"
+            LegendPosition="{Binding EffectiveLegendPosition}"
+            LegendTextPaint="{Binding LegendTextPaint}"
+            LegendTextSize="{Binding LegendTextSize}"
+            Series="{Binding Series}"
+            TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+            TooltipPosition="{Binding TooltipPosition}"
+            TooltipTextPaint="{Binding TooltipTextPaint}"
+            TooltipTextSize="{Binding TooltipTextSize}"
+            XAxes="{Binding XAxes}"
+            YAxes="{Binding YAxes}"
+            ZoomMode="{Binding ZoomMode}" />
+
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="13"
+            Foreground="{DynamicResource ChartMutedInkBrush}"
+            IsVisible="{Binding IsEmpty}"
+            Text="{Binding EmptyMessage}"
+            TextWrapping="Wrap" />
+    </Grid>
+</UserControl>

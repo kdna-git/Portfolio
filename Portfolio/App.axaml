@@ -1,0 +1,36 @@
+<Application
+    x:Class="Portfolio.App"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:charts="using:Portfolio.Charts"
+    xmlns:local="using:Portfolio"
+    RequestedThemeVariant="Default">
+    <!--  "Default" follows the system; "Light" and "Dark" pin it.  -->
+
+    <Application.DataTemplates>
+        <!--
+            Order matters: the chart templates claim the chart view models, and the view locator takes
+            everything else. One line is all it takes to make every chart component in the library
+            render anywhere in the app.
+        -->
+        <charts:ChartDataTemplates />
+        <local:ViewLocator />
+    </Application.DataTemplates>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://Portfolio.Charts/Resources/ChartStyles.axaml" />
+        <StyleInclude Source="avares://Portfolio/Resources/Controls.axaml" />
+    </Application.Styles>
+
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://ModalControl/Themes/Generic.axaml" />
+                <ResourceInclude Source="avares://Portfolio.Charts/Resources/Charts.axaml" />
+                <ResourceInclude Source="avares://Portfolio/Resources/Theme.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+</Application>

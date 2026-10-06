@@ -1,0 +1,18 @@
+<Solution>
+	<Project Path="ModalControl/ModalControl.csproj" />
+	<Project Path="MVVM.Core/MVVM.Core.csproj" />
+	<Project Path="Portfolio.Charts/Portfolio.Charts.csproj" />
+	<Project Path="Portfolio.Domain/Portfolio.Domain.csproj" />
+	<Project Path="Portfolio.Storage/Portfolio.Storage.csproj" />
+	<Project Path="Portfolio.EntityFramework/Portfolio.EntityFramework.csproj" />
+	<Project Path="Portfolio/Portfolio.csproj" />
+	<Project Path="Portfolio.Android/Portfolio.Android.csproj">
+	  <Deploy />
+	</Project>
+	<Project Path="Portfolio.Browser/Portfolio.Browser.csproj" />
+	<Project Path="Portfolio.Desktop/Portfolio.Desktop.csproj" />
+	<Project Path="Portfolio.iOS/Portfolio.iOS.csproj">
+	  <Deploy />
+	</Project>
+	<Project Path="Portfolio.Test/Portfolio.Test.csproj" />
+</Solution>

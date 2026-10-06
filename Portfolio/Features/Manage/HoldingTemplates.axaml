@@ -1,0 +1,272 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:manage="using:Portfolio.Features.Manage">
+
+    <!--
+        Shared row templates for the holdings and platforms lists. Both screens show the same shape of
+        thing — a named scope with balance, earnings and a return — so they share the markup and stay
+        visually identical. The row's own commands are on the row view model, which is what makes the
+        templates reusable without a reference back to a particular screen.
+    -->
+
+    <DataTemplate x:Key="HoldingCardTemplate" x:DataType="manage:HoldingRowViewModel">
+        <Border Margin="0,0,10,10" Classes="card interactive">
+            <StackPanel Spacing="10">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0">
+                        <TextBlock
+                            FontSize="15"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding Name}"
+                            TextTrimming="CharacterEllipsis" />
+                        <TextBlock
+                            FontSize="11"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="{Binding Subtitle}"
+                            TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <ContentControl
+                        Grid.Column="1"
+                        Width="76"
+                        Height="30"
+                        VerticalAlignment="Center"
+                        Content="{Binding Sparkline}" />
+                </Grid>
+
+                <TextBlock
+                    FontSize="22"
+                    FontWeight="Bold"
+                    Foreground="{DynamicResource AppInkBrush}"
+                    Text="{Binding BalanceText}" />
+
+                <!--  Dormant rows are called out rather than left looking like a zero balance.  -->
+                <Border
+                    Padding="7,3"
+                    HorizontalAlignment="Left"
+                    Background="{DynamicResource AppSurfaceAltBrush}"
+                    CornerRadius="6"
+                    IsVisible="{Binding IsDormant}">
+                    <TextBlock
+                        FontSize="10"
+                        Foreground="{DynamicResource AppInkMutedBrush}"
+                        Text="No entries yet" />
+                </Border>
+
+                <UniformGrid Columns="2" Rows="3">
+                    <StackPanel Margin="0,0,8,6">
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Cash" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding CashText}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,6">
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Invested" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding InvestedText}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,8,6">
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Earnings" />
+                        <TextBlock
+                            Classes="metricValue"
+                            Classes.negative="{Binding EarningsIsNegative}"
+                            Classes.positive="{Binding EarningsIsPositive}"
+                            FontSize="12"
+                            Text="{Binding EarningsText}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,0,6">
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Return" />
+                        <TextBlock
+                            Classes="metricValue"
+                            Classes.negative="{Binding ReturnIsNegative}"
+                            Classes.positive="{Binding ReturnIsPositive}"
+                            FontSize="12"
+                            Text="{Binding ReturnText}" />
+                    </StackPanel>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Share" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding ShareText}" />
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBlock
+                            FontSize="10"
+                            Foreground="{DynamicResource AppInkMutedBrush}"
+                            Text="Last activity" />
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding LastActivityText}" />
+                    </StackPanel>
+                </UniformGrid>
+
+                <StackPanel
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="6">
+                    <Button
+                        Classes="secondary"
+                        Command="{Binding OpenCommand}"
+                        Content="Statistics" />
+                    <Button
+                        Classes="secondary"
+                        Command="{Binding EditCommand}"
+                        Content="Edit" />
+                    <Button
+                        Classes="danger"
+                        Command="{Binding DeleteCommand}"
+                        Content="Delete" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="HoldingTableRowTemplate" x:DataType="manage:HoldingRowViewModel">
+        <Border
+            Padding="6,8"
+            BorderBrush="{DynamicResource AppBorderBrush}"
+            BorderThickness="0,0,0,1">
+            <Grid ColumnDefinitions="*,70,100,100,100,80,80,180">
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="Medium"
+                        Foreground="{DynamicResource AppInkBrush}"
+                        Text="{Binding Name}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        FontSize="10"
+                        Foreground="{DynamicResource AppInkMutedBrush}"
+                        Text="{Binding Subtitle}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <ContentControl
+                    Grid.Column="1"
+                    Width="60"
+                    Height="24"
+                    VerticalAlignment="Center"
+                    Content="{Binding Sparkline}" />
+                <TextBlock
+                    Grid.Column="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    FontWeight="Medium"
+                    Foreground="{DynamicResource AppInkBrush}"
+                    Text="{Binding BalanceText}" />
+                <TextBlock
+                    Grid.Column="3"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="{DynamicResource AppInkBrush}"
+                    Text="{Binding InvestedText}" />
+                <TextBlock
+                    Grid.Column="4"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Classes="metricValue"
+                    Classes.negative="{Binding EarningsIsNegative}"
+                    Classes.positive="{Binding EarningsIsPositive}"
+                    FontSize="12"
+                    Text="{Binding EarningsText}" />
+                <TextBlock
+                    Grid.Column="5"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Classes="metricValue"
+                    Classes.negative="{Binding ReturnIsNegative}"
+                    Classes.positive="{Binding ReturnIsPositive}"
+                    FontSize="12"
+                    Text="{Binding ReturnText}" />
+                <TextBlock
+                    Grid.Column="6"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    FontSize="12"
+                    Foreground="{DynamicResource AppInkSecondaryBrush}"
+                    Text="{Binding ShareText}" />
+                <StackPanel
+                    Grid.Column="7"
+                    Margin="10,0,0,0"
+                    HorizontalAlignment="Right"
+                    Orientation="Horizontal"
+                    Spacing="4">
+                    <Button
+                        Classes="ghost"
+                        Command="{Binding OpenCommand}"
+                        Content="Stats" />
+                    <Button
+                        Classes="ghost"
+                        Command="{Binding EditCommand}"
+                        Content="Edit" />
+                    <Button
+                        Classes="ghost"
+                        Command="{Binding DeleteCommand}"
+                        Content="Delete" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </DataTemplate>
+
+    <DataTemplate x:Key="HoldingTableHeaderTemplate">
+        <Grid Margin="6,2,6,6" ColumnDefinitions="*,70,100,100,100,80,80,180">
+            <TextBlock
+                Grid.Column="0"
+                Classes="fieldLabel"
+                Text="Name" />
+            <TextBlock
+                Grid.Column="1"
+                Classes="fieldLabel"
+                Text="Trend" />
+            <TextBlock
+                Grid.Column="2"
+                HorizontalAlignment="Right"
+                Classes="fieldLabel"
+                Text="Balance" />
+            <TextBlock
+                Grid.Column="3"
+                HorizontalAlignment="Right"
+                Classes="fieldLabel"
+                Text="Invested" />
+            <TextBlock
+                Grid.Column="4"
+                HorizontalAlignment="Right"
+                Classes="fieldLabel"
+                Text="Earnings" />
+            <TextBlock
+                Grid.Column="5"
+                HorizontalAlignment="Right"
+                Classes="fieldLabel"
+                Text="Return" />
+            <TextBlock
+                Grid.Column="6"
+                HorizontalAlignment="Right"
+                Classes="fieldLabel"
+                Text="Share" />
+        </Grid>
+    </DataTemplate>
+
+</ResourceDictionary>

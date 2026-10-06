@@ -1,0 +1,236 @@
+<UserControl
+    x:Class="Portfolio.Features.Backup.BackupView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:backup="using:Portfolio.Features.Backup"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:DataType="backup:BackupViewModel">
+
+    <!--
+        A modal on wide layouts and a full page on phones, like the editors, so it is laid out the
+        same way they are: one padded column, no cards inside the modal's own surface.
+    -->
+    <ScrollViewer
+        MaxHeight="760"
+        HorizontalScrollBarVisibility="Disabled"
+        VerticalScrollBarVisibility="Auto">
+        <Border MaxWidth="560" Padding="18" MinWidth="320">
+            <StackPanel Spacing="16">
+
+                <Grid ColumnDefinitions="*,Auto">
+                    <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                        <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                        <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                    </StackPanel>
+                    <Button
+                        Grid.Column="1"
+                        Margin="10,0,0,0"
+                        Classes="secondary"
+                        Command="{Binding GoBackCommand}"
+                        Content="Done" />
+                </Grid>
+
+                <shared:ErrorBanner DataContext="{Binding}" />
+
+                <!--  What the last action did. Failures use the error banner above instead.  -->
+                <Border
+                    Padding="12,10"
+                    Background="{DynamicResource AppAccentWashBrush}"
+                    CornerRadius="{DynamicResource AppControlRadius}"
+                    IsVisible="{Binding HasStatus}">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="{Binding StatusMessage}"
+                            TextWrapping="Wrap" />
+                        <Button
+                            Grid.Column="1"
+                            Classes="ghost"
+                            Command="{Binding DismissStatusCommand}"
+                            Content="Dismiss" />
+                    </Grid>
+                </Border>
+
+                <!--
+                    The review. Picking a file only ever gets this far; nothing on the device changes
+                    until one of these buttons says so.
+                -->
+                <Border
+                    Padding="14"
+                    Background="{DynamicResource AppSurfaceAltBrush}"
+                    BorderBrush="{DynamicResource AppBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="{DynamicResource AppControlRadius}"
+                    IsVisible="{Binding IsReviewing}">
+                    <StackPanel Spacing="10">
+                        <TextBlock
+                            FontSize="16"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="Import this backup?" />
+
+                        <StackPanel Spacing="2">
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource AppInkBrush}"
+                                Text="{Binding ReviewSource}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                FontSize="13"
+                                Foreground="{DynamicResource AppInkSecondaryBrush}"
+                                Text="{Binding ReviewContents}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <ItemsControl IsVisible="{Binding HasReviewWarnings}" ItemsSource="{Binding ReviewWarnings}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <Border
+                                        Margin="0,0,0,6"
+                                        Padding="10,8"
+                                        Background="{DynamicResource AppDangerWashBrush}"
+                                        CornerRadius="{DynamicResource AppControlRadius}">
+                                        <TextBlock
+                                            FontSize="12"
+                                            Foreground="{DynamicResource AppDangerBrush}"
+                                            Text="{Binding}"
+                                            TextWrapping="Wrap" />
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkSecondaryBrush}"
+                            Text="{Binding ReviewImpact}"
+                            TextWrapping="Wrap" />
+
+                        <WrapPanel
+                            HorizontalAlignment="Right"
+                            ItemSpacing="8"
+                            LineSpacing="8">
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding CancelImportCommand}"
+                                Content="Cancel" />
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding ExportThenImportCommand}"
+                                Content="Export first, then import"
+                                IsVisible="{Binding CanExportFirst}" />
+                            <Button
+                                Classes.danger="{Binding HasReviewWarnings}"
+                                Classes.primary="{Binding !HasReviewWarnings}"
+                                Command="{Binding ConfirmImportCommand}"
+                                Content="{Binding ConfirmImportText}" />
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--  This device, and the two actions.  -->
+                <StackPanel IsVisible="{Binding !IsReviewing}" Spacing="8">
+                    <TextBlock Classes="sectionTitle" Text="This device" />
+                    <TextBlock
+                        FontSize="15"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource AppInkBrush}"
+                        Text="{Binding DeviceSummary}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource AppInkSecondaryBrush}"
+                        Text="{Binding SyncStatus}"
+                        TextWrapping="Wrap" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource AppInkSecondaryBrush}"
+                        IsVisible="{Binding ShowSyncNote}"
+                        Text="{Binding SyncDetail}"
+                        TextWrapping="Wrap" />
+                    <!--  Data no file has a copy of is the one thing here worth drawing the eye to.  -->
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource AppDangerBrush}"
+                        IsVisible="{Binding ShowSyncWarning}"
+                        Text="{Binding SyncDetail}"
+                        TextWrapping="Wrap" />
+
+                    <WrapPanel
+                        Margin="0,6,0,0"
+                        ItemSpacing="8"
+                        LineSpacing="8">
+                        <Button
+                            Classes="primary"
+                            Command="{Binding ExportCommand}"
+                            Content="Export backup" />
+                        <Button
+                            Classes="secondary"
+                            Command="{Binding ImportCommand}"
+                            Content="Import backup" />
+                    </WrapPanel>
+                </StackPanel>
+
+                <!--  The monthly routine, spelled out once where it is needed.  -->
+                <StackPanel IsVisible="{Binding !IsReviewing}" Spacing="6">
+                    <TextBlock Classes="sectionTitle" Text="Moving data between devices" />
+                    <TextBlock
+                        Classes="pageSubtitle"
+                        FontSize="12"
+                        Text="1. Export on the device you have been updating." />
+                    <TextBlock
+                        Classes="pageSubtitle"
+                        FontSize="12"
+                        Text="2. Get the file to the other device: Google Drive, an email to yourself, or a USB cable." />
+                    <TextBlock
+                        Classes="pageSubtitle"
+                        FontSize="12"
+                        Text="3. Import it there. Importing replaces everything on that device." />
+                    <TextBlock
+                        Classes="pageSubtitle"
+                        FontSize="12"
+                        Text="Keep your edits to one device between syncs and nothing is lost. If both have changed, the import says so before it replaces anything." />
+                </StackPanel>
+
+                <!--  The undo for the last import or restore.  -->
+                <StackPanel IsVisible="{Binding ShowRestorePoint}" Spacing="8">
+                    <TextBlock Classes="sectionTitle" Text="Restore point" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource AppInkSecondaryBrush}"
+                        Text="{Binding RestorePointSummary}"
+                        TextWrapping="Wrap" />
+
+                    <Button
+                        HorizontalAlignment="Left"
+                        Classes="secondary"
+                        Command="{Binding AskRestoreCommand}"
+                        Content="Restore this data"
+                        IsVisible="{Binding !IsConfirmingRestore}" />
+
+                    <StackPanel IsVisible="{Binding IsConfirmingRestore}" Spacing="8">
+                        <TextBlock
+                            FontSize="12"
+                            Foreground="{DynamicResource AppInkBrush}"
+                            Text="Replace the current data with the restore point? The current data becomes the new restore point, so this can be undone too."
+                            TextWrapping="Wrap" />
+                        <WrapPanel ItemSpacing="8" LineSpacing="8">
+                            <Button
+                                Classes="secondary"
+                                Command="{Binding CancelRestoreCommand}"
+                                Content="Keep current data" />
+                            <Button
+                                Classes="danger"
+                                Command="{Binding ConfirmRestoreCommand}"
+                                Content="Restore" />
+                        </WrapPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </ScrollViewer>
+</UserControl>

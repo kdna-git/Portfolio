@@ -1,0 +1,31 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+out/
+[Dd]ebug/
+[Rr]elease/
+*.[Aa]gents/
+*.[Cc]laude/
+
+# Android signing / packages - never commit a keystore
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# Portfolio backup exports (real financial data): portfolio-<date>[-device].json
+portfolio-[0-9]*.json
+
+# Test / tooling output
+TestResults/
+*.trx
+coverage*/
+.idea/
+.vscode/
+*.DotSettings.user
+
+# OS junk
+Thumbs.db
+.DS_Store

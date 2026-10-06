@@ -1,0 +1,122 @@
+<UserControl
+    x:Class="Portfolio.Features.Shell.NavigationView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shell="using:Portfolio.Features.Shell"
+    x:Name="Root"
+    x:DataType="shell:NavigationViewModel">
+
+    <!--
+        One view model, two presentations. Which one shows is decided by the measured width, so a
+        narrow desktop window gets the bottom bar and a landscape tablet gets the rail.
+    -->
+    <Grid>
+
+        <!--  Side rail  -->
+        <Grid
+            IsVisible="{Binding Layout.UsesSideNavigation}"
+            RowDefinitions="*,Auto,Auto">
+            <ItemsControl
+                Grid.Row="0"
+                Margin="0,10,0,0"
+                ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="shell:NavigationItem">
+                        <RadioButton
+                            Classes="rail"
+                            Command="{Binding #Root.((shell:NavigationViewModel)DataContext).NavigateCommand}"
+                            CommandParameter="{Binding}"
+                            GroupName="PortfolioNavigationRail"
+                            IsChecked="{Binding IsSelected, Mode=OneWay}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <Viewbox Width="18" Height="18">
+                                    <Path
+                                        Width="24"
+                                        Height="24"
+                                        Data="{Binding IconData}"
+                                        Fill="Transparent"
+                                        Stroke="{DynamicResource AppOnBrandBrush}"
+                                        StrokeJoin="Round"
+                                        StrokeLineCap="Round"
+                                        StrokeThickness="1.8" />
+                                </Viewbox>
+                                <TextBlock VerticalAlignment="Center" Text="{Binding Label}" />
+                            </StackPanel>
+                        </RadioButton>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button
+                Grid.Row="1"
+                Classes="rail"
+                Command="{Binding OpenBackupCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Viewbox Width="18" Height="18">
+                        <Path
+                            Width="24"
+                            Height="24"
+                            Data="{StaticResource AppBackupIcon}"
+                            Fill="Transparent"
+                            Stroke="{DynamicResource AppOnBrandBrush}"
+                            StrokeJoin="Round"
+                            StrokeLineCap="Round"
+                            StrokeThickness="1.8" />
+                    </Viewbox>
+                    <TextBlock VerticalAlignment="Center" Text="Backup &amp; sync" />
+                </StackPanel>
+            </Button>
+
+            <Button
+                Grid.Row="2"
+                Margin="12"
+                Classes="primary"
+                Command="{Binding AddEntryCommand}"
+                Content="New entry" />
+        </Grid>
+
+        <!--  Bottom bar  -->
+        <ItemsControl
+            Height="62"
+            IsVisible="{Binding !Layout.UsesSideNavigation}"
+            ItemsSource="{Binding Items}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="1" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="shell:NavigationItem">
+                    <RadioButton
+                        Classes="bar"
+                        Command="{Binding #Root.((shell:NavigationViewModel)DataContext).NavigateCommand}"
+                        CommandParameter="{Binding}"
+                        GroupName="PortfolioNavigationBar"
+                        IsChecked="{Binding IsSelected, Mode=OneWay}">
+                        <!--  Icon above a short label: five destinations have to fit a phone's width.  -->
+                        <StackPanel
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="3">
+                            <Viewbox
+                                Width="20"
+                                Height="20"
+                                HorizontalAlignment="Center">
+                                <Path
+                                    Width="24"
+                                    Height="24"
+                                    Data="{Binding IconData}"
+                                    Fill="Transparent"
+                                    Stroke="{DynamicResource AppOnBrandBrush}"
+                                    StrokeJoin="Round"
+                                    StrokeLineCap="Round"
+                                    StrokeThickness="1.8" />
+                            </Viewbox>
+                            <TextBlock HorizontalAlignment="Center" Text="{Binding ShortLabel}" />
+                        </StackPanel>
+                    </RadioButton>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

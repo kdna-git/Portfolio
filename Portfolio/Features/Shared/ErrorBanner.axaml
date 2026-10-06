@@ -1,0 +1,30 @@
+<UserControl
+    x:Class="Portfolio.Features.Shared.ErrorBanner"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:DataType="shared:ScreenViewModel"
+    IsVisible="{Binding HasError}">
+
+    <!--  A failed write is reported rather than swallowed; the screen keeps working either way.  -->
+    <Border
+        Margin="0,0,0,10"
+        Padding="12,10"
+        Background="{DynamicResource AppDangerWashBrush}"
+        CornerRadius="{DynamicResource AppControlRadius}">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Foreground="{DynamicResource AppDangerBrush}"
+                Text="{Binding ErrorMessage}"
+                TextWrapping="Wrap" />
+            <Button
+                Grid.Column="1"
+                Classes="ghost"
+                Command="{Binding DismissErrorCommand}"
+                Content="Dismiss" />
+        </Grid>
+    </Border>
+</UserControl>

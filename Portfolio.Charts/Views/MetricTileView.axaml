@@ -1,0 +1,126 @@
+<UserControl
+    x:Class="Portfolio.Charts.Views.MetricTileView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Portfolio.Charts.ViewModels"
+    x:DataType="vm:MetricTile">
+
+    <!--
+        One tile, three weights. A hero tile is filled and large; a standard tile is outlined; a
+        compact tile puts label and value on one line for dense supporting figures. Exactly one of
+        the three is visible, chosen by the tile's own Emphasis.
+    -->
+    <Grid>
+
+        <!--  Hero  -->
+        <Border
+            MinHeight="76"
+            Padding="16,14"
+            Background="{DynamicResource ChartHeroBrush}"
+            CornerRadius="{DynamicResource ChartCardRadius}"
+            IsVisible="{Binding IsHero}"
+            ToolTip.Tip="{Binding Description}">
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Spacing="2">
+                    <TextBlock
+                        FontSize="12"
+                        FontWeight="Medium"
+                        Foreground="{DynamicResource ChartHeroMutedInkBrush}"
+                        Text="{Binding Label}"
+                        TextTrimming="CharacterEllipsis" />
+                    <TextBlock
+                        FontSize="26"
+                        FontWeight="Bold"
+                        Foreground="{DynamicResource ChartHeroInkBrush}"
+                        Text="{Binding ValueText}"
+                        TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+                <ContentControl
+                    Grid.Column="1"
+                    Width="76"
+                    Height="34"
+                    VerticalAlignment="Center"
+                    Content="{Binding Sparkline}"
+                    IsVisible="{Binding Sparkline, Converter={x:Static ObjectConverters.IsNotNull}}" />
+            </Grid>
+        </Border>
+
+        <!--  Compact  -->
+        <Grid
+            Margin="0,3"
+            ColumnDefinitions="*,Auto"
+            IsVisible="{Binding IsCompact}"
+            ToolTip.Tip="{Binding Description}">
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                FontSize="12"
+                Foreground="{DynamicResource ChartSecondaryInkBrush}"
+                Text="{Binding Label}"
+                TextTrimming="CharacterEllipsis" />
+            <TextBlock
+                Grid.Column="1"
+                Margin="8,0,0,0"
+                VerticalAlignment="Center"
+                Classes="metricValue"
+                Classes.negative="{Binding IsNegative}"
+                Classes.positive="{Binding IsPositive}"
+                FontSize="12"
+                FontWeight="Medium"
+                Text="{Binding ValueText}" />
+        </Grid>
+
+        <!--  Standard  -->
+        <Border
+            MinHeight="68"
+            Padding="14,10"
+            Background="{DynamicResource ChartSurfaceBrush}"
+            BorderBrush="{DynamicResource ChartBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="{DynamicResource ChartTileRadius}"
+            IsVisible="{Binding IsStandard}"
+            ToolTip.Tip="{Binding Description}">
+            <Grid RowDefinitions="Auto,*">
+                <TextBlock
+                    Grid.Row="0"
+                    FontSize="11"
+                    FontWeight="Medium"
+                    Foreground="{DynamicResource ChartMutedInkBrush}"
+                    Text="{Binding Label}"
+                    TextTrimming="CharacterEllipsis" />
+                <Grid Grid.Row="1" ColumnDefinitions="*,Auto">
+                    <TextBlock
+                        Grid.Column="0"
+                        VerticalAlignment="Bottom"
+                        Classes="metricValue"
+                        Classes.negative="{Binding IsNegative}"
+                        Classes.positive="{Binding IsPositive}"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Text="{Binding ValueText}"
+                        TextTrimming="CharacterEllipsis" />
+                    <StackPanel
+                        Grid.Column="1"
+                        VerticalAlignment="Bottom"
+                        IsVisible="{Binding DeltaText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Orientation="Horizontal"
+                        Spacing="4">
+                        <TextBlock
+                            Classes="metricValue"
+                            Classes.negative="{Binding IsDeltaNegative}"
+                            Classes.positive="{Binding IsDeltaPositive}"
+                            FontSize="11"
+                            Text="{Binding DeltaText}" />
+                        <TextBlock
+                            FontSize="11"
+                            Foreground="{DynamicResource ChartMutedInkBrush}"
+                            Text="{Binding DeltaLabel}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
