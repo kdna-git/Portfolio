@@ -16,21 +16,14 @@ namespace Portfolio.Services;
 /// records a fingerprint of the result, so the next import can tell whether this device changed in
 /// between — the one mistake a "one device is the source of truth" sync invites.
 /// </remarks>
-public sealed class BackupService
+public sealed class BackupService(PortfolioStore store, IDeviceStorage device, TimeProvider? clock = null)
 {
     private const string SyncRecordName = "sync.json";
     private const string RestorePointName = "restore-point.json";
 
-    private readonly PortfolioStore _store;
-    private readonly IDeviceStorage _device;
-    private readonly TimeProvider _clock;
-
-    public BackupService(PortfolioStore store, IDeviceStorage device, TimeProvider? clock = null)
-    {
-        _store = store;
-        _device = device;
-        _clock = clock ?? TimeProvider.System;
-    }
+    private readonly PortfolioStore _store = store;
+    private readonly IDeviceStorage _device = device;
+    private readonly TimeProvider _clock = clock ?? TimeProvider.System;
 
     public string DeviceName => _device.DeviceName;
 

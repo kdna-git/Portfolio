@@ -6,20 +6,13 @@ namespace Portfolio.Domain.Models;
 /// Where holdings live: a broker, a bank, a lending site. Aggregates its financial items and never
 /// stores figures of its own, so a platform total always equals the sum of its parts.
 /// </summary>
-public sealed class Platform : IPortfolioNode
+public sealed class Platform(long id, string name, IEnumerable<FinancialItem>? financialItems = null) : IPortfolioNode
 {
-    private readonly List<FinancialItem> _financialItems;
+    private readonly List<FinancialItem> _financialItems = financialItems is null ? [] : [.. financialItems];
 
-    public Platform(long id, string name, IEnumerable<FinancialItem>? financialItems = null)
-    {
-        Id = id;
-        Name = name;
-        _financialItems = financialItems is null ? [] : [.. financialItems];
-    }
+    public long Id { get; } = id;
 
-    public long Id { get; }
-
-    public string Name { get; }
+    public string Name { get; } = name;
 
     public IReadOnlyList<FinancialItem> FinancialItems => _financialItems;
 

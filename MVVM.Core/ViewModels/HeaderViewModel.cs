@@ -7,19 +7,13 @@ namespace MVVM.Core.ViewModels;
 /// <summary>
 /// Desktop title bar: the app name plus the window buttons that replace the native chrome.
 /// </summary>
-public sealed partial class HeaderViewModel : ViewModelBase
+public sealed partial class HeaderViewModel(string title, string? subtitle = null) : ViewModelBase
 {
     [ObservableProperty]
-    public partial string Title { get; set; }
+    public partial string Title { get; set; } = title;
 
     [ObservableProperty]
-    public partial string? Subtitle { get; set; }
-
-    public HeaderViewModel(string title, string? subtitle = null)
-    {
-        Title = title;
-        Subtitle = subtitle;
-    }
+    public partial string? Subtitle { get; set; } = subtitle;
 
     #region Window commands
 

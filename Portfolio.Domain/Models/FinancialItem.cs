@@ -6,33 +6,23 @@ namespace Portfolio.Domain.Models;
 /// One holding on one platform: a loan, a fund position, a savings pot. Owns the entries that
 /// describe its life.
 /// </summary>
-public sealed class FinancialItem : IPortfolioNode
-{
-    private readonly List<Entry> _entries;
-
-    public FinancialItem(
+public sealed class FinancialItem(
         long id,
         long platformId,
         InvestmentType type,
         string name,
         IEnumerable<Entry>? entries = null
-    )
-    {
-        Id = id;
-        PlatformId = platformId;
-        Type = type;
-        Name = name;
-        // Kept sorted so running totals, valuation anchors and charts never depend on insert order.
-        _entries = entries is null ? [] : [.. entries.InOrder()];
-    }
+    ) : IPortfolioNode
+{
+    private readonly List<Entry> _entries = entries is null ? [] : [.. entries.InOrder()];
 
-    public long Id { get; }
+    public long Id { get; } = id;
 
-    public long PlatformId { get; }
+    public long PlatformId { get; } = platformId;
 
-    public InvestmentType Type { get; }
+    public InvestmentType Type { get; } = type;
 
-    public string Name { get; }
+    public string Name { get; } = name;
 
     public IReadOnlyList<Entry> Entries => _entries;
 
