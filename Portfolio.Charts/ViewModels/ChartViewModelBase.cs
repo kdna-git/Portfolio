@@ -60,6 +60,18 @@ public abstract partial class ChartViewModelBase : ObservableObject
     public partial ZoomAndPanMode ZoomMode { get; set; }
 
     /// <summary>
+    /// Drawn on a narrow screen. Each chart decides what to give up for the width — rotated labels,
+    /// slice labels — so a phone gets a figure laid out for it rather than a desktop one shrunk to fit.
+    /// </summary>
+    [ObservableProperty]
+    public partial bool IsCompact { get; set; }
+
+    partial void OnIsCompactChanged(bool value) => OnCompactChanged();
+
+    /// <summary>Redraws whatever depends on <see cref="IsCompact"/>.</summary>
+    protected virtual void OnCompactChanged() { }
+
+    /// <summary>
     /// What the chart control binds to: the chosen position when a legend is warranted, hidden when
     /// a single series makes it redundant (the title already names it).
     /// </summary>

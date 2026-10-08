@@ -302,16 +302,18 @@ public sealed partial class AnalysisViewModel : ScreenViewModel
 
     private void BuildSections(IPortfolioNode scope, DateRange range)
     {
+        var compact = Layout.IsCompact;
+
         var overTime = new List<AnalysisSection>
         {
             Section("value", AnalyticsPresenter.ValueAgainstDeposits(scope, range, _today)),
-            Section("activity", AnalyticsPresenter.PeriodActivity(scope, range, _today)),
+            Section("activity", AnalyticsPresenter.PeriodActivity(scope, range, _today, compact)),
         };
 
         if (_mode != AnalysisMode.Dashboard)
         {
             overTime.Add(Section("earnings", AnalyticsPresenter.CumulativeEarnings(scope, range, _today)));
-            overTime.Add(Section("breakdown", AnalyticsPresenter.EarningsBreakdown(scope, range, _today)));
+            overTime.Add(Section("breakdown", AnalyticsPresenter.EarningsBreakdown(scope, range, _today, compact)));
 
             if (scope.HasValuations())
                 overTime.Add(Section("drawdown", AnalyticsPresenter.Drawdown(scope, range, _today)));
@@ -350,14 +352,11 @@ public sealed partial class AnalysisViewModel : ScreenViewModel
     {
         var height = Layout.ChartHeight;
         var metric = SelectedMetric.Metric;
+        var distribution = AnalyticsPresenter.Distribution(scope, metric, range, _today, Layout.IsCompact);
 
         var charts = new List<AnalysisSection>
         {
-            Section(
-                "distribution",
-                AnalyticsPresenter.Distribution(scope, metric, range, _today),
-                height: height + 120
-            ),
+            Section("distribution", distribution, height: distribution.HeightFor(height)),
         };
 
         if (_mode != AnalysisMode.Dashboard && scope.Children.Count > 1)

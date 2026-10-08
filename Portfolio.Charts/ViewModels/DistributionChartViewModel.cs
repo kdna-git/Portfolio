@@ -61,6 +61,29 @@ public sealed partial class DistributionChartViewModel : ChartViewModelBase
         Rebuild();
     }
 
+    protected override void OnCompactChanged() => Rebuild();
+
+    /// <summary>
+    /// The height to give this chart so the donut itself gets <paramref name="donutHeight"/> and the
+    /// list still fits under it.
+    /// </summary>
+    /// <remarks>
+    /// The list has a row per entry, so a fixed height hands the donut whatever the list leaves over:
+    /// the more platforms, the smaller the donut, until past a dozen rows the list spills out of its
+    /// card. Rows are over- rather than under-estimated, since spare height goes to the donut.
+    /// </remarks>
+    public double HeightFor(double donutHeight)
+    {
+        const double listMargin = 8;
+        const double rowHeight = 22;
+        const double noteHeight = 36;
+
+        return donutHeight
+            + listMargin
+            + (Rows.Count * rowHeight)
+            + (ExcludedNote is null ? 0 : noteHeight);
+    }
+
     private void Rebuild()
     {
         var ordered = _data.OrderByDescending(v => v.Value).ToList();
@@ -125,7 +148,9 @@ public sealed partial class DistributionChartViewModel : ChartViewModelBase
                     OuterRadiusOffset = 0,
                     Stroke = new SolidColorPaint(ChartPalette.Color(ChartPalette.Surface), 2),
                     // Label the slices that have room; the rest are covered by the legend and list.
-                    DataLabelsSize = share >= 0.08 ? 11 : 0,
+                    // Not at all on a compact figure: labels outside the ring take width from the
+                    // ring itself, and on a phone the list below already says the same thing.
+                    DataLabelsSize = !IsCompact && share >= 0.08 ? 11 : 0,
                     DataLabelsPosition = PolarLabelsPosition.Outer,
                     DataLabelsPaint = new SolidColorPaint(
                         ChartPalette.Color(ChartPalette.SecondaryInk)

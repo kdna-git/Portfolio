@@ -64,6 +64,8 @@ public sealed partial class CategoryChartViewModel : ChartViewModelBase
 
     partial void OnOrientationChanged(BarOrientation value) => Rebuild();
 
+    protected override void OnCompactChanged() => Rebuild();
+
     public override void OnThemeChanged()
     {
         base.OnThemeChanged();
@@ -204,19 +206,29 @@ public sealed partial class CategoryChartViewModel : ChartViewModelBase
         }
     }
 
-    private Axis BuildLabelAxis() =>
-        new()
+    private Axis BuildLabelAxis()
+    {
+        // Names down the side of a horizontal chart each get their own row; only labels along the
+        // bottom compete for width.
+        var alongBottom = Orientation == BarOrientation.Vertical;
+
+        // Many buckets would collide head-on. A wide figure rotates them, which is better than
+        // dropping labels; a compact one cannot spare the height a rotated row takes from the plot,
+        // so there the axis skips some instead.
+        var thin = alongBottom && IsCompact && _labels.Count > 6;
+
+        return new()
         {
             Labels = [.. _labels],
             LabelsPaint = AxisTextPaint(),
             TextSize = 11,
-            // Many buckets would collide head-on; rotating is better than dropping labels.
-            LabelsRotation = _labels.Count > 14 && Orientation == BarOrientation.Vertical ? 45 : 0,
+            LabelsRotation = alongBottom && !IsCompact && _labels.Count > 14 ? 45 : 0,
             SeparatorsPaint = null,
             TicksPaint = AxisLinePaint(),
             MinStep = 1,
-            ForceStepToMin = _labels.Count <= 24,
+            ForceStepToMin = !thin && _labels.Count <= 24,
         };
+    }
 
     private Axis BuildValueAxis() =>
         new()

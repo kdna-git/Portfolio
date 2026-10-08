@@ -89,7 +89,7 @@
                 -->
                 <cc:ChartCard
                     Content="{Binding Distribution}"
-                    ContentHeight="{Binding ChartHeight}"
+                    ContentHeight="{Binding DistributionHeight}"
                     Header="Balance by platform"
                     IsVisible="{Binding HasAnyPlatforms}" />
 

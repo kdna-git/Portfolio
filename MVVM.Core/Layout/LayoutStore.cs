@@ -86,13 +86,17 @@ public sealed partial class LayoutStore : ObservableObject
     /// A chart tall enough to read but never taller than the viewport, so a phone does not need
     /// two swipes to pass a single chart.
     /// </summary>
+    /// <remarks>
+    /// The height covers the legend and axis labels as well as the plot, which on a phone is where
+    /// most of it goes — hence a compact figure that is not much shorter than a medium one.
+    /// </remarks>
     public double ChartHeight
     {
         get
         {
             var ideal = Breakpoint switch
             {
-                Breakpoint.Compact => 260.0,
+                Breakpoint.Compact => 300.0,
                 Breakpoint.Medium => 320.0,
                 _ => 400.0,
             };
@@ -106,10 +110,12 @@ public sealed partial class LayoutStore : ObservableObject
 
     public void Update(Size size)
     {
-        if (size.Width > 0)
-            Width = size.Width;
-
+        // Height first: a width change can cross a breakpoint, and screens rebuild their figures
+        // there, reading ChartHeight — which has to be computed from this size, not the last one.
         if (size.Height > 0)
             Height = size.Height;
+
+        if (size.Width > 0)
+            Width = size.Width;
     }
 }

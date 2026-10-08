@@ -78,7 +78,8 @@ public sealed partial class PlatformListViewModel : ScreenViewModel
 
     public bool IsCardView => ViewMode == ListViewMode.Cards;
 
-    public double ChartHeight => Layout.ChartHeight;
+    /// <summary>Tall enough for a full-size donut plus a row per platform under it.</summary>
+    public double DistributionHeight => Distribution.HeightFor(Layout.ChartHeight);
 
     #endregion
 
@@ -137,7 +138,6 @@ public sealed partial class PlatformListViewModel : ScreenViewModel
             ViewMode = ListViewMode.Cards;
 
         RefreshIfReady();
-        OnPropertyChanged(nameof(ChartHeight));
     }
 
     protected override void Refresh()
@@ -176,11 +176,13 @@ public sealed partial class PlatformListViewModel : ScreenViewModel
         Rows = Sort(rows).ToList();
         IsEmptyResult = Rows.Count == 0;
 
+        Distribution.IsCompact = Layout.IsCompact;
         Distribution.SetData(
             AnalyticsPresenter.ToLabeledValues(
                 root.DistributionByChild(PortfolioMetric.TotalBalance, range, _today)
             )
         );
+        OnPropertyChanged(nameof(DistributionHeight));
 
         Breakdown = AnalyticsPresenter.ChildBreakdown(
             root,

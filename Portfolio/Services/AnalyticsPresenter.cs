@@ -315,10 +315,11 @@ public static class AnalyticsPresenter
     public static CategoryChartViewModel PeriodActivity(
         IPortfolioNode node,
         DateRange range,
-        DateOnly today
+        DateOnly today,
+        bool compact = false
     )
     {
-        var granularity = PreferBuckets(node, range, today);
+        var granularity = PreferBuckets(node, range, today, compact);
         var flows = node.PeriodNetFlowSeries(range, granularity, today);
         var earnings = node.PeriodEarningsSeries(range, granularity, today);
 
@@ -326,6 +327,7 @@ public static class AnalyticsPresenter
         {
             Title = "Activity per period",
             Subtitle = "Money you moved against what the portfolio generated",
+            IsCompact = compact,
         };
 
         chart.SetData(
@@ -351,10 +353,11 @@ public static class AnalyticsPresenter
     public static CategoryChartViewModel EarningsBreakdown(
         IPortfolioNode node,
         DateRange range,
-        DateOnly today
+        DateOnly today,
+        bool compact = false
     )
     {
-        var granularity = PreferBuckets(node, range, today);
+        var granularity = PreferBuckets(node, range, today, compact);
         var parts = node.EarningsBreakdownSeries(range, granularity, today);
 
         var chart = new CategoryChartViewModel
@@ -362,6 +365,7 @@ public static class AnalyticsPresenter
             Title = "Income and costs",
             Subtitle = "Costs and write-offs are drawn below the line",
             Layout = BarLayout.Stacked,
+            IsCompact = compact,
         };
 
         // Fixed colours rather than palette slots: these five components mean the same thing in every
@@ -397,7 +401,8 @@ public static class AnalyticsPresenter
         IPortfolioNode node,
         PortfolioMetric metric,
         DateRange range,
-        DateOnly today
+        DateOnly today,
+        bool compact = false
     )
     {
         var slices = node.DistributionByChild(metric, range, today);
@@ -407,6 +412,7 @@ public static class AnalyticsPresenter
             Title = $"{metric.DisplayName()} by {ChildNoun(node)}",
             Subtitle = $"Each {ChildNoun(node)}'s share of the total",
             ValueFormat = metric.Format() == MetricFormat.Percent ? ValueFormat.Percent : ValueFormat.Currency,
+            IsCompact = compact,
         };
 
         chart.SetData(ToLabeledValues(slices));
@@ -548,7 +554,12 @@ public static class AnalyticsPresenter
     /// Bucket size for bar charts. Bars need fewer, wider buckets than lines: forty columns are
     /// unreadable where forty line points are fine.
     /// </summary>
-    private static Granularity PreferBuckets(IPortfolioNode node, DateRange range, DateOnly today)
+    private static Granularity PreferBuckets(
+        IPortfolioNode node,
+        DateRange range,
+        DateOnly today,
+        bool compact
+    )
     {
         var suggested = node.SuggestGranularity(range, today);
 
@@ -560,8 +571,10 @@ public static class AnalyticsPresenter
         };
 
         // Keep stepping up until the bars fit. Around thirty columns is the point past which a bar
-        // chart stops being readable and starts being a texture.
-        const int maxBars = 30;
+        // chart stops being readable and starts being a texture — across a desktop window. Across a
+        // phone the same thirty are a few pixels each; half as many stays readable and still fits a
+        // year of months.
+        var maxBars = compact ? 16 : 30;
 
         while (coarser != Granularity.Yearly && BucketCount(node, range, coarser, today) > maxBars)
         {
