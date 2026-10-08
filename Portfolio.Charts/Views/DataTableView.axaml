@@ -2,6 +2,7 @@
     x:Class="Portfolio.Charts.Views.DataTableView"
     xmlns="https://github.com/avaloniaui"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:Portfolio.Charts.Controls"
     xmlns:conv="using:Portfolio.Charts.Converters"
     xmlns:vm="using:Portfolio.Charts.ViewModels"
     x:DataType="vm:DataTableViewModel">
@@ -10,16 +11,26 @@
         Columns are data, so the grid is built from an ItemsControl rather than fixed in markup. The
         whole table scrolls sideways below its natural width: on a phone a six-column matrix has to
         be pannable, and squeezing it instead would make every number unreadable.
+
+        Every row is laid out on its own, so the value cells go in a SharedColumnsGrid: column n is
+        as wide as the widest cell in column n across the heading and all the rows, and the size
+        scope here keeps that sharing to this one table.
     -->
     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-        <Grid MinWidth="{Binding MinWidth}" RowDefinitions="Auto,*">
+        <Grid
+            MinWidth="{Binding MinWidth}"
+            Grid.IsSharedSizeScope="True"
+            RowDefinitions="Auto,*">
 
             <!--
                 Heading row: each cell sorts its column, and it is laid out exactly like a data row —
-                label in the star column, values in a uniform grid of the same width — so the headings
-                sit over the numbers they name.
+                label in the star column, values in the shared columns, and the same right inset as
+                a row's padding — so the headings sit over the numbers they name.
             -->
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+            <Grid
+                Grid.Row="0"
+                Margin="0,0,6,0"
+                ColumnDefinitions="*,Auto">
                 <Button
                     Grid.Column="0"
                     HorizontalAlignment="Left"
@@ -32,15 +43,17 @@
                 <ItemsControl Grid.Column="1" ItemsSource="{Binding ValueColumns}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <UniformGrid Rows="1" />
+                            <controls:SharedColumnsGrid />
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:TableColumn">
+                            <!--  Stretched so the right-aligned heading ends where the column does.  -->
                             <Button
                                 MinWidth="72"
                                 Margin="6,0"
                                 Padding="0,4"
+                                HorizontalAlignment="Stretch"
                                 Classes="columnHeader"
                                 Command="{Binding $parent[ItemsControl].((vm:DataTableViewModel)DataContext).SortCommand}"
                                 CommandParameter="{Binding Key}"
@@ -87,11 +100,12 @@
                                 <ItemsControl Grid.Column="1" ItemsSource="{Binding Cells}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <UniformGrid Rows="1" />
+                                            <controls:SharedColumnsGrid />
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate x:DataType="vm:DisplayCell">
+                                            <!--  Text right-aligned too: a short value would sit at the left of its minimum width.  -->
                                             <TextBlock
                                                 MinWidth="72"
                                                 Margin="6,0"
@@ -101,7 +115,8 @@
                                                 Classes.negative="{Binding IsNegative}"
                                                 Classes.positive="{Binding IsPositive}"
                                                 FontSize="12"
-                                                Text="{Binding Text}" />
+                                                Text="{Binding Text}"
+                                                TextAlignment="Right" />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>

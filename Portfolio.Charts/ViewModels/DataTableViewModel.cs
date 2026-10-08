@@ -31,7 +31,7 @@ public sealed partial class DataTableViewModel : ObservableObject
     /// The heading for the row-label column, and the headings for the value columns, split apart.
     /// </summary>
     /// <remarks>
-    /// A row lays out as "label in a star column, values in a uniform grid". The heading row has to
+    /// A row lays out as "label in a star column, values in shared columns". The heading row has to
     /// use the same split or the two drift: spreading all headings evenly across the full width puts
     /// every one of them over the wrong column.
     /// </remarks>
