@@ -14,7 +14,7 @@
     x:DataType="vm:MainViewModel"
     Background="Transparent"
     CanResize="True"
-    Icon="/Assets/avalonia-logo.ico"
+    Icon="/Assets/app-icon.ico"
     WindowDecorations="None"
     WindowStartupLocation="CenterScreen">
 

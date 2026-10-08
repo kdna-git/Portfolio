@@ -7,7 +7,7 @@ namespace Portfolio.Android;
 [Activity(
     Label = "Portfolio",
     Theme = "@style/MyTheme.NoActionBar",
-    Icon = "@drawable/Icon",
+    Icon = "@mipmap/ic_launcher",
     MainLauncher = true,
     LaunchMode = LaunchMode.SingleTop,
     // Without these the activity is destroyed and recreated on rotation and on a light/dark switch,

@@ -46,6 +46,7 @@ so there is something to look at straight away.
 | `Portfolio` | The app: screens, view models, theme. |
 | `Portfolio.Desktop` / `.Android` / `.iOS` / `.Browser` | Platform heads, a dozen lines each. |
 | `Portfolio.Test` | Unit and integration tests. |
+| `branding/` | The app icon's SVG source. |
 
 ## 1. The charts are a library now
 

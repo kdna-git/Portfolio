@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Launcher icon on API 26+, masked to whatever shape the launcher uses. The layers come from
+  branding/generate_icons.py; API 24-25 fall back to the flat mipmap-xxxhdpi/ic_launcher.png.
+-->
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+  <background android:drawable="@drawable/ic_launcher_background" />
+  <foreground android:drawable="@mipmap/ic_launcher_foreground" />
+  <monochrome android:drawable="@mipmap/ic_launcher_monochrome" />
+</adaptive-icon>

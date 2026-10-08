@@ -8,7 +8,7 @@ using Portfolio.Storage;
 
 namespace Portfolio.Android;
 
-[Application(Label = "Portfolio", Icon = "@drawable/Icon")]
+[Application(Label = "Portfolio", Icon = "@mipmap/ic_launcher")]
 public class Application : AvaloniaAndroidApplication<App>
 {
     protected Application(nint javaReference, JniHandleOwnership transfer)
