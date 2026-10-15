@@ -212,7 +212,7 @@
                             <Border
                                 Margin="0,0,10,10"
                                 Classes="card interactive"
-                                PointerPressed="OnCardPressed">
+                                Tapped="OnCardTapped">
                                 <Grid RowDefinitions="Auto,Auto,Auto">
                                     <Grid Grid.Row="0" ColumnDefinitions="*,Auto">
                                         <StackPanel Grid.Column="0">
