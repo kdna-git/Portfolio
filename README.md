@@ -1,213 +1,210 @@
-# Portfolio Claude
+# Portfolio
 
-A personal investment ledger: you record what moved, and it works out what that means. Built on
-Avalonia and running on Windows, macOS, Linux, Android, iOS and in the browser from one codebase.
+A personal investment ledger. You write down what happened (a deposit, some interest, a fee, a
+withdrawal) and Portfolio works out your balance, earnings, returns and charts across all your
+platforms and holdings.
 
-This is a rewrite of `../Portfolio` aimed at four specific problems: charts that could not be reused,
-statistics that only ever covered the whole portfolio, list screens with no way to find anything, and
-a mobile and browser story that had never actually been run.
+![Dashboard](docs/screenshots/dashboard.png)
 
-## Running it
+> [!NOTE]
+> **About this README.** This guide was written by AI (Claude).
+> **I have only tested the app on Windows and Android.** It also builds for macOS, Linux, iOS and
+> the browser, but I have not tried those, so expect rough edges there.
+
+## Features
+
+- **Dashboard** with your total balance, deposits, earnings, return (XIRR) and charts over time.
+- **Statistics for anything**: the whole portfolio, a single platform, a single holding, or every
+  holding of one type, for any period.
+- **Entries, holdings and platforms lists** with search, filters, sorting, grouping, and a
+  cards or table view.
+- **Live preview** when adding an entry: you see how your balance, invested capital and earnings
+  will change before you save, plus warnings for common mistakes.
+- **Works on desktop and phone** with a layout that adapts to the screen size.
+- **Backup & sync** between devices with a single file. No account, no server, no cloud.
+- **Your data stays on your device.**
+
+## Getting started
+
+You need the [.NET 10 SDK](https://dotnet.microsoft.com/download). Then, from this folder:
+
+### Windows
 
 ```bash
 dotnet run --project Portfolio.Desktop
 ```
 
+### Android
+
+Install the Android workload once:
+
 ```bash
-dotnet run --project Portfolio.Browser
+dotnet workload install android
 ```
+
+Connect your phone with USB debugging enabled (Android 7.0 or newer), then:
 
 ```bash
 dotnet build Portfolio.Android -t:Install
 ```
 
+### Try it in the browser
+
 ```bash
-dotnet test
+dotnet run --project Portfolio.Browser
 ```
 
-Desktop, Android and iOS keep a SQLite file in the platform's per-user application data folder. The
-browser keeps a JSON document in `localStorage` and seeds a three-year demo portfolio on first visit,
-so there is something to look at straight away.
+The browser version starts with **demo data** so you can look around without entering anything.
+All the screenshots in this guide come from it.
 
-> **A note on the Avalonia build:** a XAML error does *not* fail `dotnet build` — it is reported and
-> the build still says "succeeded", leaving an assembly with no compiled XAML that throws at startup.
-> `./build.sh <project>` wraps the build and surfaces those diagnostics.
+## How it works
 
-## Layout
+Your portfolio is organised in three levels:
 
-| Project | What it is |
+| Level | What it is | Example |
+|---|---|---|
+| **Platform** | Where your money is: a broker, bank or lending site | Trade Republic, Mintos |
+| **Holding** | A specific investment on that platform | "Dividend stocks", "Cash savings" |
+| **Entry** | Something that happened to a holding on a date | Deposited €300, earned €12 interest |
+
+So the first time you open the app:
+
+1. **Add a platform** from the *Platforms* screen.
+2. **Add a holding** to it from the *Holdings* screen, and pick its role (see below).
+3. **Add entries** with the **New entry** button, which is always visible.
+
+Everything else (balances, earnings, returns, charts) is calculated from your entries.
+
+### Holding roles
+
+Each holding has a *role* that describes what you are doing with it. It is used for grouping and
+filtering, so pick whatever fits best:
+
+| Role | Meaning |
 |---|---|
-| `Portfolio.Domain` | Models and the analytics engine. No UI, no storage. |
-| `Portfolio.Charts` | **Reusable** Avalonia chart components. No reference to the domain. |
-| `MVVM.Core` | Shell plumbing: navigation stores, the layout store, the chrome window. |
-| `ModalControl` | The modal overlay control. |
-| `Portfolio.Storage` | JSON persistence plus the demo data. |
-| `Portfolio.EntityFramework` | SQLite persistence. |
-| `Portfolio` | The app: screens, view models, theme. |
-| `Portfolio.Desktop` / `.Android` / `.iOS` / `.Browser` | Platform heads, a dozen lines each. |
-| `Portfolio.Test` | Unit and integration tests. |
-| `branding/` | The app icon's SVG source. |
+| Grow | You keep adding money to it |
+| Compound | Its income is reinvested |
+| Hold | Left alone, no money in or out |
+| Buffer | A cash reserve |
+| Shrink | Slowly winding it down |
+| Exit | Closing it out |
+| Other | Anything else |
 
-## 1. The charts are a library now
+## Adding an entry
 
-`Portfolio.Charts` has **no reference to `Portfolio.Domain`**. It takes dates, labels and numbers, so
-it can be dropped into any other Avalonia app:
+![New entry](docs/screenshots/entry-editor.png)
 
-```csharp
-var chart = new TimeSeriesChartViewModel { Title = "Balance" };
-chart.SetSeries([
-    new TimeSeries("Value",  points,   SeriesStyle.Area()),
-    new TimeSeries("Paid in", deposits, SeriesStyle.Reference()),
-]);
-```
+Pick the platform, the holding and the date, then fill in only the fields that apply. One entry
+can contain several things at once, such as a deposit that you invested the same day, or interest
+with tax taken off.
 
-```xml
-<Application.DataTemplates>
-    <charts:ChartDataTemplates />
-</Application.DataTemplates>
-```
+| Section | Fields | Use it when… |
+|---|---|---|
+| Cash in and out of the platform | Deposit, Withdrawal | You send money to the platform or take it out |
+| Between platform cash and the asset | Invested, Capital repaid | Cash on the platform goes into the investment, or comes back from it |
+| Income | Interest, Bonus | You earn interest, dividends, rewards or referral bonuses |
+| Costs and losses | Tax, Fee, Written off | You pay tax or fees, or lose money because an investment defaulted |
+| Reported value | Market value on this date | The platform tells you what the holding is worth today |
 
-That one registration is all the wiring there is; after it, `<ContentControl Content="{Binding
-AnyChart}" />` renders a chart anywhere — a page, a list row, a tooltip.
+All amounts are entered as positive numbers. The section they go in decides whether money is
+coming in or going out.
 
-What is in the box: `TimeSeriesChartViewModel`, `CategoryChartViewModel` (grouped or stacked, vertical
-or horizontal), `DistributionChartViewModel` (donut plus its accessible list), `SparklineViewModel`,
-`MetricTile`/`MetricTileGroup`, `DataTableViewModel` (sortable), and a `ChartCard` frame.
+At the bottom of the form you can see how the entry changes your balance, invested capital and
+earnings. You will also get a warning if something looks wrong, such as a date in the future or
+withdrawing more cash than you have.
 
-Two details worth knowing:
+> [!TIP]
+> **Market value** is optional. Fill it in only when your platform reports a value (for example a
+> fund's current price). It is used as the holding's estimated value until you enter a new one.
 
-- **`ChartScroll.PassThrough`** fixes the scroll trap where a chart under the pointer stops the page
-  from scrolling. Ctrl still zooms the chart.
-- **The palette** has selected light and dark sets, validated for colour-vision separation and
-  contrast against this app's actual surfaces. Colour follows the entity rather than its rank, so
-  filtering a list does not repaint the survivors, and past eight series the remainder folds into
-  "Other" instead of reusing the first colour.
+## The screens
 
-`Portfolio/Services/AnalyticsPresenter.cs` is the single seam between the domain and the charts.
+### Dashboard
 
-## 2. Statistics for any scope
+Your whole portfolio at a glance: balance, money paid in, earnings, return and charts. Use the
+**Period** selector to look at a single month, a year, or all time.
 
-`IPortfolioNode` is implemented by `PortfolioRoot`, `Platform`, `FinancialItem` and `GroupNode` (for
-"everything of type Grow"). Every analytics function takes a node and a `DateRange`:
+### Statistics
 
-```csharp
-var stats = node.Describe(DateRange.Year(2025));
-var xirr  = node.XirrFor(DateRange.LastMonths(12, today));
-var split = node.DistributionByChild(PortfolioMetric.NetEarnings);
-```
+The same figures and charts, for whatever you choose in **Scope**: the whole portfolio, one
+platform, one holding, or a group of holdings. You can also open it straight from any holding or
+platform with the **Stats** button.
 
-So one screen — `AnalysisViewModel` — serves the dashboard, the statistics explorer and every
-drill-down. Picking a platform or a single holding in the scope picker runs the same code against a
-different node.
+![Statistics for one holding](docs/screenshots/holding-stats.png)
 
-Beyond the original figures it now reports estimated value, unrealised gain, simple return, cost
-ratio, yield on deposits, share of parent, maximum drawdown, best and worst month, average month,
-positive-month streak, concentration (Herfindahl) and largest share. New series: estimated value,
-cumulative earnings, drawdown, per-period flows, and a stacked income-and-cost breakdown. Plus a
-per-period return matrix and a side-by-side table, both for any node's children.
+### Entries
 
-### Two corrections to the maths
+Every entry you have recorded. Search by note, holding or platform, filter by period, platform,
+holding or type of movement, and sort or group the results. The bar above the list shows the
+totals for whatever is currently filtered.
 
-Numbers will differ from the old app, deliberately:
+![Entries](docs/screenshots/entries.png)
 
-- **XIRR.** The original fed interest, bonuses, taxes and fees in as cash flows *and* counted them in
-  the terminal value, double-counting them and badly understating returns. A return calculation takes
-  only flows that cross the portfolio boundary — deposits and withdrawals — bracketed by the opening
-  and closing value. A holding that earns 10 % a year now reports 10 %.
-- **Write-offs.** `DefaultLoss` used to reduce invested capital only, leaving the balance untouched,
-  which silently turned lost money into cash. It now reduces net earnings and the balance, so the
-  identity `Cash = TotalBalance − Invested` holds and a default costs what it costs.
+### Holdings
 
-XIRR also returns `null` rather than `0` when it is undefined, because `0` reads as "it broke even",
-which is a different and more misleading claim than "there is not enough here to say".
+All your holdings with balance, invested, earnings, return and share of the portfolio. Group them
+by platform or role, and switch between **Cards** and **Table**.
 
-## 3. The list screens
+![Holdings](docs/screenshots/holdings.png)
 
-Entries, holdings and platforms each get: search, filters (period, platform, holding, movement kind,
-investment type), sorting with direction, grouping, a card ⇄ table toggle, totals for the filtered set
-rather than the whole portfolio, and paged loading for long histories. Rows carry a sparkline and open
-their own statistics. Delete confirmations name what else will go, because these deletes cascade.
+### Platforms
 
-An entry can hold several movements at once — a deposit that was invested the same day, interest net
-of tax — so rather than pretending it has one "type", each row shows a labelled chip per movement it
-actually contains.
+Your platforms and how your money is split between them.
 
-The entry editor previews the effect on balance, invested capital and earnings as you type, and warns
-about the mistakes that are easy to make and hard to spot later: future dates, withdrawing more than
-the available cash, repaying more capital than is invested.
+![Platforms](docs/screenshots/platforms.png)
 
-## 4. Android and the browser
+### On a phone
 
-- **Layout follows the measured viewport, not the operating system.** A `LayoutStore` fed by the
-  shell's own size drives column counts and chart heights, so a narrow desktop window behaves like a
-  phone and a desktop browser gets the desktop layout. The old `OperatingSystem.IsAndroid()` checks
-  could not get either case right.
-- **One navigation view model, two presentations** — a side rail when there is room, a bottom bar of
-  five icons when there is not.
-- **Editors are modals on wide layouts and full pages on compact ones**, so Android's back gesture
-  does the right thing. `NavigationStore` keeps a real back stack of factories, and
-  `App.TryGoBack()` lets the system back button unwind it before leaving the app.
-- **The browser head works at all.** It previously never set up storage and would have crashed on the
-  first screen; one repository interface now makes that a compile error. SQLite in WebAssembly needs a
-  native build and a mounted filesystem to survive a reload, so this head uses a JSON document in
-  `localStorage` instead.
-- **Culture.** Browsers report a language, not a region — `navigator.language` is often just `es` —
-  and a neutral culture has no currency, so every amount rendered with the generic currency sign.
-  `AppCulture` resolves a specific culture at startup.
-- Safe-area insets, 44 px minimum touch targets, and tables that scroll sideways instead of squeezing.
+On a narrow screen the side menu becomes a bottom bar, lists default to cards, and editors open as
+full pages so the back gesture works as expected. The backup screen is behind the sync icon on the
+dashboard.
 
-## 5. Backup and sync
+<table>
+  <tr>
+    <td><img src="docs/screenshots/phone-dashboard.png" alt="Dashboard on a phone" width="200"></td>
+    <td><img src="docs/screenshots/phone-entries.png" alt="Entries on a phone" width="200"></td>
+    <td><img src="docs/screenshots/phone-holdings.png" alt="Holdings on a phone" width="200"></td>
+    <td><img src="docs/screenshots/phone-backup.png" alt="Backup and sync on a phone" width="200"></td>
+  </tr>
+</table>
 
-**Backup & sync** sits in the side rail, or behind the sync icon on a phone's dashboard. Export writes
-the whole portfolio to one JSON file (`portfolio-2026-10-06-desktop.json`); import on another device
-replaces everything there. Moving the file across — Drive, email, a cable — is left to you, which is
-what keeps this working the same way on every platform with no server.
+## Backup & sync between devices
 
-- **The file is the browser's own storage format**, `PortfolioSnapshot`, plus who wrote it and when.
-  Types are written by name, and a newer format is refused rather than half-read.
-- **Nothing merges.** Each device keeps a fingerprint of its data from its last export or import, so
-  an import can say what it is about to throw away — changes made since that sync, data that was never
-  exported, or a file older than one already seen — before anything happens.
-- **Every import is undoable.** The data it replaces is saved as a restore point first, and restoring
-  swaps the two, so an undo can be undone as well.
-- **All or nothing.** `ReplaceAllAsync` runs in one SQLite transaction, or one document write in the
-  browser; a failed import leaves the old portfolio exactly as it was.
-- **A stored document that cannot be read is no longer lost.** The browser head used to replace a
-  damaged document with demo data the moment it opened; it now copies it to
-  `portfolio.snapshot.v1.damaged` and leaves it in place until the first real change.
+![Backup & sync](docs/screenshots/backup.png)
 
-## Two traps worth knowing about
+Portfolio has no cloud account. To move your data from one device to another (for example from
+your PC to your phone):
 
-Both of these cost a crash and a broken screen, and neither is caught by the compiler:
+1. On the device with the latest data, open **Backup & sync** and press **Export backup**. This
+   saves a file such as `portfolio-2026-10-06-desktop.json`.
+2. Move the file to the other device any way you like: Google Drive, email, a USB cable…
+3. On the other device, open **Backup & sync**, press **Import backup** and pick the file.
 
-- **A property assigned in a constructor raises its change handler.** If that handler refreshes the
-  screen, the refresh runs while later fields are still null. Screens therefore do their first
-  refresh from `CompleteInitialisation()` as the last line of the constructor, and handlers call
-  `RefreshIfReady()`, which also guards re-entrancy — a refresh rebuilds the filter lists, which
-  reassigns their selected items, which raises the handlers again.
-- **A `DataTemplate` whose `x:DataType` does not match the item is not applied at all.** Avalonia
-  falls back to `ToString()`, so the screen fills with `DisplayRow { Key = … }` rather than failing.
-  If a template renders as text, check its `DataType` before anything else.
-- **Styling a button's resting state is not enough.** Fluent's own
-  `Button:pointerover /template/ ContentPresenter` setters replace the background *and* the text
-  colour, so a class that defines only its normal appearance loses both the moment the pointer
-  arrives. Every button class here states its hover and pressed appearance, and sets
-  `TextElement.Foreground` alongside `Background` — the content presenter carries the text colour,
-  not the button.
-- **A heading row has to be laid out exactly like a data row.** Spreading headings evenly while the
-  rows use a star column plus fixed ones puts every heading over the wrong column, and a trailing
-  `Auto` column that is empty in the heading and full of buttons in the rows does the same thing more
-  subtly. Pin that column to a width.
-- **An `ItemsPanelTemplate` cannot use compiled bindings**, so its panel needs a `ReflectionBinding` —
-  and the reflection parser does not understand `#ElementName` or `((Type)DataContext)` casts. It
-  throws when the panel is realised, which may be only at one breakpoint on one screen: the card
-  layouts here crashed on Android and nowhere else, because desktop never left table mode. Give the
-  panel what it needs on its own data context instead; `HoldingGroupViewModel.Columns` exists for
-  exactly this.
+> [!WARNING]
+> **Importing replaces everything on that device.** Nothing is merged. If the device has changes
+> that are not in the file, the app tells you before it replaces anything.
 
-## Status
+Before every import the app keeps a **restore point** of the data it replaced. If you imported by
+mistake, press **Restore** on the same screen to get it back.
 
-Everything builds with zero warnings and 99 tests pass, including screen-construction tests that
-reproduce the crash above. The desktop and browser heads have been run and checked, and backup and
-sync has been exercised end to end in the browser. The Android and iOS heads compile but have not
-been run on a device.
+The easiest routine is to make your changes on one device only, and export/import whenever you
+want the other one to catch up.
+
+> [!CAUTION]
+> Backup files contain all your financial data. Keep them somewhere private.
+
+## Where your data is stored
+
+| Device | Location |
+|---|---|
+| Windows | `%LOCALAPPDATA%\Portfolio\Portfolio.db` |
+| Android | Inside the app's private storage (removed if you uninstall the app, so export a backup first) |
+| Browser | The browser's local storage for that site |
+
+## For developers
+
+Project structure, architecture and build notes are in [TECHNICAL.md](TECHNICAL.md).
+
+## License
+
+[MIT](LICENSE.txt)
