@@ -1,0 +1,164 @@
+<UserControl
+    x:Class="Portfolio.Features.Analysis.ProjectionView"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:analysis="using:Portfolio.Features.Analysis"
+    xmlns:cc="using:Portfolio.Charts.Controls"
+    xmlns:shared="using:Portfolio.Features.Shared"
+    x:DataType="analysis:ProjectionViewModel">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="{DynamicResource AppPagePadding}" Spacing="12">
+
+            <!--  Title row  -->
+            <Grid ColumnDefinitions="Auto,*">
+                <Button
+                    Grid.Column="0"
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    Classes="secondary"
+                    Command="{Binding GoBackCommand}"
+                    Content="Back" />
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Classes="pageTitle" Text="{Binding Title}" />
+                    <TextBlock Classes="pageSubtitle" Text="{Binding Subtitle}" />
+                </StackPanel>
+            </Grid>
+
+            <shared:ErrorBanner DataContext="{Binding}" />
+
+            <!--
+                Assumptions. They start out measured from the scope's history; the hint under them says
+                whether what is on screen is still that, or a what-if.
+            -->
+            <Border Classes="card" Padding="12">
+                <StackPanel Spacing="12">
+                    <WrapPanel ItemSpacing="12" LineSpacing="10">
+                        <StackPanel MinWidth="220" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Scope" />
+                            <ComboBox ItemsSource="{Binding ScopeOptions}" SelectedItem="{Binding SelectedScope}">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate x:DataType="shared:ScopeOption">
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <TextBlock
+                                                Grid.Column="0"
+                                                Text="{Binding DisplayLabel}"
+                                                TextTrimming="CharacterEllipsis" />
+                                            <TextBlock
+                                                Grid.Column="1"
+                                                Margin="12,0,0,0"
+                                                FontSize="10"
+                                                Foreground="{DynamicResource AppInkMutedBrush}"
+                                                Text="{Binding Group}" />
+                                        </Grid>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel MinWidth="170" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Range" />
+                            <ComboBox ItemsSource="{Binding BandOptions}" SelectedItem="{Binding SelectedBand}" />
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <UniformGrid Columns="{Binding Columns}">
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Return a year (%)" />
+                            <NumericUpDown
+                                FormatString="0.0"
+                                Increment="0.5"
+                                Maximum="50"
+                                Minimum="-50"
+                                Value="{Binding AnnualReturnPercent}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Volatility a year (%)" />
+                            <NumericUpDown
+                                FormatString="0.0"
+                                Increment="0.5"
+                                Maximum="100"
+                                Minimum="0"
+                                Value="{Binding AnnualVolatilityPercent}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Added each month" />
+                            <NumericUpDown
+                                FormatString="N0"
+                                Increment="50"
+                                Value="{Binding MonthlyContribution}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Years ahead" />
+                            <NumericUpDown
+                                FormatString="0"
+                                Increment="1"
+                                Maximum="60"
+                                Minimum="1"
+                                Value="{Binding Years}" />
+                        </StackPanel>
+                        <StackPanel Margin="0,0,10,10" Spacing="4">
+                            <TextBlock Classes="fieldLabel" Text="Goal (optional)" />
+                            <NumericUpDown
+                                FormatString="N0"
+                                Increment="5000"
+                                Minimum="0"
+                                Value="{Binding Goal}" />
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            Classes="pageSubtitle"
+                            Text="{Binding BasisText}"
+                            TextWrapping="Wrap" />
+                        <Button
+                            Grid.Column="1"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Center"
+                            Classes="secondary"
+                            Command="{Binding UseHistoryCommand}"
+                            Content="Use history"
+                            IsVisible="{Binding IsOverridden}"
+                            ToolTip.Tip="Put the measured return, volatility and contribution back" />
+                    </Grid>
+
+                    <TextBlock
+                        Foreground="{DynamicResource AppDangerBrush}"
+                        IsVisible="{Binding Warning, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        Text="{Binding Warning}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <cc:ChartCard
+                Content="{Binding Chart}"
+                ContentHeight="{Binding ChartHeight}"
+                Header="{Binding Chart.Title}"
+                Subheader="{Binding Chart.Subtitle}" />
+
+            <ContentControl Content="{Binding Outcome}" IsVisible="{Binding Outcome, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+            <Border
+                Classes="card"
+                Padding="12"
+                IsVisible="{Binding GoalText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                <StackPanel Spacing="4">
+                    <TextBlock Classes="sectionTitle" Text="Goal reached" />
+                    <TextBlock
+                        Foreground="{DynamicResource AppInkBrush}"
+                        Text="{Binding GoalText}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <TextBlock
+                Classes="pageSubtitle"
+                Text="A projection of what happens if the past carries on, not a forecast. Returns rarely do."
+                TextWrapping="Wrap" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

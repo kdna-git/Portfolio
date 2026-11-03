@@ -116,6 +116,13 @@
                             ItemsSource="{Binding PeriodOptions}"
                             SelectedItem="{Binding SelectedPeriod}" />
                     </StackPanel>
+
+                    <!--  Beside the scope picker, because it projects whatever that picker shows.  -->
+                    <Button
+                        VerticalAlignment="Bottom"
+                        Classes="secondary"
+                        Command="{Binding OpenProjectionCommand}"
+                        Content="Project forward" />
                 </WrapPanel>
             </Border>
 

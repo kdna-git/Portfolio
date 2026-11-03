@@ -61,6 +61,7 @@ public sealed class ScreenConstructionTests
         {
             () => new AnalysisViewModel(store, layout, navigator, mode: AnalysisMode.Dashboard),
             () => new AnalysisViewModel(store, layout, navigator, mode: AnalysisMode.Explorer),
+            () => new ProjectionViewModel(store, layout, navigator),
             () => new EntryListViewModel(store, layout, navigator),
             () => new FinancialItemListViewModel(store, layout, navigator),
             () => new PlatformListViewModel(store, layout, navigator),
@@ -90,6 +91,26 @@ public sealed class ScreenConstructionTests
 
         change.Should().NotThrow();
         screen.HoldingFilters.Should().NotBeEmpty();
+    }
+
+    [Fact]
+    public async Task A_projection_starts_from_history_and_can_go_back_to_it()
+    {
+        var (store, layout, navigator) = await SetUpAsync();
+        var screen = new ProjectionViewModel(store, layout, navigator);
+
+        var measured = screen.AnnualReturnPercent;
+        screen.IsOverridden.Should().BeFalse();
+        screen.Outcome.Should().NotBeNull();
+
+        screen.AnnualReturnPercent = measured + 5;
+        screen.IsOverridden.Should().BeTrue();
+
+        // A horizon or a goal is a question, not an assumption about the past.
+        screen.UseHistoryCommand.Execute(null);
+        screen.Years = 20;
+        screen.IsOverridden.Should().BeFalse();
+        screen.AnnualReturnPercent.Should().Be(measured);
     }
 
     [Fact]

@@ -30,6 +30,7 @@ public sealed class ViewLocator : IDataTemplate
         param switch
         {
             AnalysisViewModel => new AnalysisView(),
+            ProjectionViewModel => new ProjectionView(),
             EntryListViewModel => new EntryListView(),
             FinancialItemListViewModel => new FinancialItemListView(),
             PlatformListViewModel => new PlatformListView(),

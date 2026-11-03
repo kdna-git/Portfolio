@@ -189,6 +189,9 @@ public sealed partial class AnalysisViewModel : ScreenViewModel
     [RelayCommand]
     private void OpenBackup() => Navigator.OpenBackup();
 
+    [RelayCommand]
+    private void OpenProjection() => Navigator.OpenProjection(SelectedScope?.Key);
+
     #endregion
 
     partial void OnSelectedScopeChanged(ScopeOption? value) => RefreshIfReady();

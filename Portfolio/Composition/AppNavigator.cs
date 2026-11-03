@@ -61,6 +61,13 @@ public sealed class AppNavigator(
         CurrentChanged?.Invoke();
     }
 
+    /// <summary>
+    /// Opens the projection for a scope. A page on top of the statistics rather than a destination:
+    /// it is a question you ask about something you are already looking at.
+    /// </summary>
+    public void OpenProjection(string? scopeKey = null) =>
+        navigation.Push(() => new ProjectionViewModel(store, layout, this, scopeKey));
+
     public void EditEntry(Entry? entry = null, long? financialItemId = null) =>
         Open(() => new EntryEditorViewModel(store, layout, this, entry, financialItemId));
 
